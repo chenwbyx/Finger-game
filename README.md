@@ -1,2 +1,2 @@
 # Finger-game
->Design by chenwenbo.
+>Design and maintenance by chenwenbo.
