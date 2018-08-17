@@ -1,0 +1,105 @@
+{
+	"groups": [
+		{
+			"keys": "description_json,btn_back_png,btn_relive_png,sea_bg_png,sea_obstacle_1_png,sea_obstacle_2_png,sea_obstacle_3_png,sea_obstacle_4_png,sea_obstacle_0_png,sea_text_bg_png,sea_fish_2_png,sea_fish_3_png,btn_begin_png,r_fish_json,r_fish_png,l_fish_json,l_fish_png,silverRain_json,silver_png",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"name": "description_json",
+			"type": "json",
+			"url": "config/description.json"
+		},
+		{
+			"name": "btn_back_png",
+			"type": "image",
+			"url": "assets/btn_back.png"
+		},
+		{
+			"name": "btn_relive_png",
+			"type": "image",
+			"url": "assets/btn_relive.png"
+		},
+		{
+			"name": "sea_bg_png",
+			"type": "image",
+			"url": "assets/sea/sea_bg.png"
+		},
+		{
+			"name": "sea_obstacle_1_png",
+			"type": "image",
+			"url": "assets/sea/sea_obstacle_1.png"
+		},
+		{
+			"name": "sea_obstacle_2_png",
+			"type": "image",
+			"url": "assets/sea/sea_obstacle_2.png"
+		},
+		{
+			"name": "sea_obstacle_3_png",
+			"type": "image",
+			"url": "assets/sea/sea_obstacle_3.png"
+		},
+		{
+			"name": "sea_obstacle_4_png",
+			"type": "image",
+			"url": "assets/sea/sea_obstacle_4.png"
+		},
+		{
+			"name": "sea_obstacle_0_png",
+			"type": "image",
+			"url": "assets/sea/sea_obstacle_0.png"
+		},
+		{
+			"name": "sea_text_bg_png",
+			"type": "image",
+			"url": "assets/sea/sea_text_bg.png"
+		},
+		{
+			"name": "sea_fish_2_png",
+			"type": "image",
+			"url": "assets/sea/sea_fish_2.png"
+		},
+		{
+			"name": "sea_fish_3_png",
+			"type": "image",
+			"url": "assets/sea/sea_fish_3.png"
+		},
+		{
+			"name": "btn_begin_png",
+			"type": "image",
+			"url": "assets/btn_begin.png"
+		},
+		{
+			"name": "r_fish_json",
+			"type": "json",
+			"url": "assets/sea/r_fish.json"
+		},
+		{
+			"name": "r_fish_png",
+			"type": "image",
+			"url": "assets/sea/r_fish.png"
+		},
+		{
+			"name": "l_fish_json",
+			"type": "json",
+			"url": "assets/sea/l_fish.json"
+		},
+		{
+			"name": "l_fish_png",
+			"type": "image",
+			"url": "assets/sea/l_fish.png"
+		},
+		{
+			"name": "silverRain_json",
+			"type": "json",
+			"url": "assets/sea/silverRain.json"
+		},
+		{
+			"name": "silver_png",
+			"type": "image",
+			"url": "assets/sea/silver.png"
+		}
+	]
+}

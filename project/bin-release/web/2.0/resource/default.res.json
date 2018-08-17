@@ -1,0 +1,55 @@
+{
+	"groups": [
+		{
+			"keys": "description_json,btn_icon_png,obstacle_1_png,obstacle_2_png,car_png,background_1_jpg,btn_back_png,btn_relive_png,background_3_jpg",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"name": "description_json",
+			"type": "json",
+			"url": "config/description.json"
+		},
+		{
+			"name": "btn_icon_png",
+			"type": "image",
+			"url": "assets/btn_icon.png"
+		},
+		{
+			"name": "obstacle_1_png",
+			"type": "image",
+			"url": "assets/obstacle_1.png"
+		},
+		{
+			"name": "obstacle_2_png",
+			"type": "image",
+			"url": "assets/obstacle_2.png"
+		},
+		{
+			"name": "car_png",
+			"type": "image",
+			"url": "assets/car.png"
+		},
+		{
+			"name": "background_1_jpg",
+			"type": "image",
+			"url": "assets/background_1.jpg"
+		},
+		{
+			"name": "btn_back_png",
+			"type": "image",
+			"url": "assets/btn_back.png"
+		},
+		{
+			"name": "btn_relive_png",
+			"type": "image",
+			"url": "assets/btn_relive.png"
+		},
+		{
+			"name": "background_3_jpg",
+			"type": "image",
+			"url": "assets/background_3.jpg"
+		}
+	]
+}

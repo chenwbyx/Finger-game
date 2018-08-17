@@ -1,0 +1,51 @@
+{
+  "engineVersion": "5.2.5",
+  "compilerVersion": "5.2.5",
+  "template": {},
+  "target": {
+    "current": "web"
+  },
+  "eui": {
+    "exmlRoot": [
+      "resource/eui_skins"
+    ],
+    "themes": [
+      "resource/default.thm.json"
+    ],
+    "exmlPublishPolicy": "commonjs"
+  },
+  "modules": [
+    {
+      "name": "egret"
+    },
+    {
+      "name": "eui"
+    },
+    {
+      "name": "assetsmanager"
+    },
+    {
+      "name": "tween"
+    },
+    {
+      "name": "game"
+    },
+    {
+      "name": "promise"
+    },
+    {
+      "name": "particle",
+      "path": "../libsrc"
+    }
+  ],
+  "targets": {
+    "ios": {
+      "appname": "game",
+      "packagename": "com.companyname"
+    },
+    "android": {
+      "appname": "game",
+      "packagename": "com.companyname"
+    }
+  }
+}
