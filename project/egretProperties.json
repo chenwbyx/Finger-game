@@ -35,7 +35,7 @@
     },
     {
       "name": "particle",
-      "path": "../libsrc"
+      "path": "../particle/libsrc"
     }
   ],
   "targets": {
