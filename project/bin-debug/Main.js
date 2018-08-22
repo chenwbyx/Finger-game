@@ -93,7 +93,7 @@ var Main = (function (_super) {
         egret.registerImplementation("eui.IAssetAdapter", assetAdapter);
         egret.registerImplementation("eui.IThemeAdapter", new ThemeAdapter());
         this.runGame().catch(function (e) {
-            console.log(e);
+            //console.log(e);
         });
     };
     Main.prototype.runGame = function () {
@@ -115,6 +115,7 @@ var Main = (function (_super) {
                         return [4 /*yield*/, platform.getUserInfo()];
                     case 4:
                         userInfo = _a.sent();
+                        platform.sendShareData({ command: "load" });
                         console.log(userInfo);
                         return [2 /*return*/];
                 }
@@ -161,13 +162,23 @@ var Main = (function (_super) {
             }, _this);
         });
     };
+    Main.prototype.onResizeStage = function (e) {
+        if (e === void 0) { e = null; }
+        Config.StageWidth = this.stage.stageWidth;
+        Config.StageHeight = this.stage.stageHeight;
+        Config.StageHalfWidth = this.stage.stageWidth / 2;
+        Config.StageHalfHeight = this.stage.stageHeight / 2;
+    };
     /**
      * 创建场景界面
      * Create scene interface
      */
     Main.prototype.createGameScene = function () {
-        var gameContainer = new fighter.GameContainer();
-        this.addChild(gameContainer);
+        this.onResizeStage();
+        this.addEventListener(egret.Event.RESIZE, this.onResizeStage, this);
+        this.addChild(fighter.GameContainer.Inst);
+        fighter.GameContainer.Inst.Init();
+        platform.sendShareData({ command: "loadRes" });
     };
     /**
      * 描述文件加载成功，开始播放动画

@@ -3,7 +3,7 @@
   "compilerVersion": "5.2.5",
   "template": {},
   "target": {
-    "current": "web"
+    "current": "wxgame"
   },
   "eui": {
     "exmlRoot": [
@@ -32,10 +32,6 @@
     },
     {
       "name": "promise"
-    },
-    {
-      "name": "particle",
-      "path": "../particle/libsrc"
     }
   ],
   "targets": {

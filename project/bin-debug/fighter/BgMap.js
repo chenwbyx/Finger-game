@@ -50,13 +50,13 @@ var fighter;
         };
         /**逐帧运动*/
         BgMap.prototype.enterFrameHandler = function (event) {
-            if (fighter.GameContainer.myScore / 30 > 80)
-                this.speed = 13;
-            else
+            if ((fighter.GameContainer.myScore / 30) % 80 == 0 && fighter.GameContainer.myScore != 0)
+                this.speed = this.speed * 6 / 5;
+            else if (fighter.GameContainer.myScore < 80)
                 this.speed = 10;
             for (var i = 0; i < this.rowCount; i++) {
                 var bgBmp = this.bmpArr[i];
-                bgBmp.y += this.speed;
+                bgBmp.y += (this.speed + fighter.GameContainer.addspeed);
                 //判断超出屏幕后，回到队首，这样来实现循环反复
                 if (bgBmp.y > this.stageH) {
                     bgBmp.y = this.bmpArr[0].y - this.textureHeight;

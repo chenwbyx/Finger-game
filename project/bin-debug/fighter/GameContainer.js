@@ -20,7 +20,7 @@ var fighter;
             /**速度 */
             _this.speed = 10;
             /**障碍物间隔 */
-            _this.obstacleSpace = [1.5, 1.3, 1.4, 1.3, 1.5, 1.4, 1.5, 1.4, 1.3, 1.5];
+            _this.obstacleSpace = [1.5, 1.3, 1.4, 1.3, 1.5, 1.1, 1.4, 1.5, 1, 1.4, 1.3, 1.2, 1.5];
             _this.obstacleNum = 0; //obstacleSpace的迭代器
             _this.obstacleCnt = 0; //每帧+1，每30使obstacleNum+1
             /**障碍物的位置 */
@@ -28,8 +28,6 @@ var fighter;
             _this.obstaclePosCnt = 0; //obstaclePosition的迭代器
             /**道路位置 */
             _this.RoadPosition = [];
-            /**显示成绩的文本 */
-            _this.myScoreText = new eui.Label();
             /**是否可以复活 */
             _this.reLive = true;
             /**无敌时间*/
@@ -40,31 +38,22 @@ var fighter;
             /**保存多点触控的每一个点 */
             _this.touchPoints = { names: [] };
             /**发光效果 */
-            _this.glowFilter = new egret.GlowFilter(0xEEDD82, 0.8, 20, 20, 10, 3 /* HIGH */, false, false);
-            _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
+            _this.glowFilter = new egret.GlowFilter(0xEEDD82, 0.8, 15, 15, 10, 3 /* HIGH */, false, false);
+            /**声音相关 */
+            _this.soundBgm = new egret.Sound();
+            _this.soundDead = new egret.Sound();
             return _this;
         }
-        GameContainer.prototype.onAddToStage = function (event) {
-            this.removeEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
-            this.creatGameSence();
-        };
-        GameContainer.prototype.creatGameSence = function () {
-            var _this = this;
+        GameContainer.prototype.Init = function () {
             this.stageW = this.stage.stageWidth;
             this.stageH = this.stage.stageHeight;
             //创建背景
             this.bg = new fighter.BgMap();
             this.addChild(this.bg);
             //创建开始按钮
-            this.btnStart = this.createBitmapByName("btn_begin_png");
-            this.btnStart.x = (this.stageW - this.btnStart.width) / 2;
-            this.btnStart.y = (this.stageH - this.btnStart.height) / 2;
-            this.touchEnabled = true;
-            this.addEventListener(egret.TouchEvent.TOUCH_TAP, this.gameStart, this);
-            this.addChild(this.btnStart);
-            window.onkeydown = function (e) {
-                _this.gameStart();
-            };
+            this._ui = new fighter.UI();
+            this.addChild(this._ui);
+            this._ui.Init();
             //创建返回按钮
             this.btnBack = this.createBitmapByName("btn_back_png");
             this.btnBack.x = (this.stageW - this.btnBack.width) / 2;
@@ -79,22 +68,13 @@ var fighter;
             for (var i = 0; i < 4; ++i) {
                 this.RoadPosition[i] = this.stageW / 8 + i * this.stageW / 4;
             }
-            //小球
-            this.creatBall();
-            //显示成绩文本
-            this.myScoreText.text = GameContainer.myScore + "米";
-            this.myScoreText.anchorOffsetX = 30;
-            this.myScoreText.x = this.stageW / 2;
-            this.myScoreText.y = 35;
-            this.myScoreText.size = 35;
-            this.myScoreTextBg = this.createBitmapByName("sea_text_bg_png");
-            this.myScoreTextBg.x = this.stageW / 2 - 70;
-            this.myScoreTextBg.y = 10;
             //显示无敌时间文本
             this.reLiveText.text = "无敌时间：" + this.reLiveTimer + " s";
             this.reLiveText.x = this.stageW / 2 - 200;
             this.reLiveText.y = this.stageH / 2;
-            this.reLiveText.size = 70;
+            this.reLiveText.size = 50;
+            //创建背景音乐
+            this.soundInit();
         };
         GameContainer.prototype.createBitmapByName = function (name) {
             var result = new egret.Bitmap();
@@ -102,15 +82,32 @@ var fighter;
             result.texture = texture;
             return result;
         };
+        Object.defineProperty(GameContainer, "Inst", {
+            get: function () {
+                if (this._inst == null) {
+                    this._inst = new GameContainer();
+                }
+                return this._inst;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        GameContainer.prototype.soundInit = function () {
+            this.soundBgm.addEventListener(egret.Event.COMPLETE, function loadOver(event) { }, this);
+            this.soundBgm.load("resource/assets/sound/BGM_InGame.mp3");
+            this.soundDead.addEventListener(egret.Event.COMPLETE, function loadOver(event) { }, this);
+            this.soundDead.load("resource/assets/sound/SE_GameOver.mp3");
+        };
         GameContainer.prototype.gameStart = function () {
             var _this = this;
-            egret.log("ENTER hame start");
-            this.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.gameStart, this);
+            this._ui.Run();
+            this.soundChannel = this.soundBgm.play(0, -1);
+            //小球
+            this.creatBall();
             GameContainer.myScore = 0;
-            this.myScoreText.text = GameContainer.myScore + "米";
-            this.addChild(this.myScoreTextBg);
-            this.addChild(this.myScoreText);
-            this.removeChild(this.btnStart);
+            this._ui._myScoreText.text = GameContainer.myScore + "米";
+            //this.addChild(this.myScoreTextBg);
+            //this.addChild(this.myScoreText);
             this.bg.start();
             this.liftBall.gotoAndPlay(1, -1);
             this.rightBall.gotoAndPlay(1, -1);
@@ -151,15 +148,17 @@ var fighter;
             this.liftBall = new egret.MovieClip(RightMcFactory.generateMovieClipData("l_fish"));
             this.rightBall = new egret.MovieClip(LiftMcFactory.generateMovieClipData("r_fish"));
             this.initBallPoition(0);
-            this.addChildAt(this.rightBall, 10);
-            this.addChildAt(this.liftBall, 10);
+            //egret.log("添加小球", this.numChildren);
+            this.addChildAt(this.rightBall, 3);
+            //egret.log("添加小球", this.numChildren);
+            this.addChildAt(this.liftBall, 3);
         };
         /**初始化小球位置 */
         GameContainer.prototype.initBallPoition = function (pos) {
             this.rightBall.x = this.RoadPosition[2] - this.rightBall.width / 2 + pos;
-            this.rightBall.y = (this.stageH - this.rightBall.height) * 3 / 4 + pos;
+            this.rightBall.y = (this.stageH - this.rightBall.height) * 3 / 5 + pos;
             this.liftBall.x = this.RoadPosition[1] - this.liftBall.width / 2 + pos;
-            this.liftBall.y = (this.stageH - this.liftBall.height) * 3 / 4 + pos;
+            this.liftBall.y = (this.stageH - this.liftBall.height) * 3 / 5 + pos;
         };
         /**创建障碍物 */
         GameContainer.prototype.creatObstacle = function () {
@@ -169,8 +168,10 @@ var fighter;
             rightObstacle.x = (this.obstaclePosition[this.obstaclePosCnt] == 2 || this.obstaclePosition[this.obstaclePosCnt] == 4) ? this.RoadPosition[2] - rightObstacle.width / 2 : this.RoadPosition[3] - rightObstacle.width / 2; //Math.random()*(this.stageW-liftObstacle.width);
             rightObstacle.y = -10;
             liftObstacle.y = -10;
-            this.addChildAt(rightObstacle, 3);
-            this.addChildAt(liftObstacle, 3);
+            //egret.log("添加障碍物",this.numChildren);
+            this.addChildAt(rightObstacle, 1);
+            //egret.log("添加障碍物",this.numChildren);
+            this.addChildAt(liftObstacle, 1);
             this.obstacles.push(rightObstacle);
             this.obstacles.push(liftObstacle);
             this.obstaclePosCnt = (++this.obstaclePosCnt) % this.obstaclePosition.length;
@@ -187,7 +188,7 @@ var fighter;
         GameContainer.prototype.touchRightEnd = function () {
             this.rightBall.x = this.RoadPosition[2] - this.rightBall.width / 2;
         };
-        /**抬起手指 */
+        /**触摸结束 */
         GameContainer.prototype.touchEnd = function (e) {
             if (this.touchPoints[e.touchPointID].x <= this.stageW / 2) {
                 this.liftBall.x = this.RoadPosition[1] - this.liftBall.width / 2;
@@ -197,7 +198,7 @@ var fighter;
             }
             delete this.touchPoints[e.touchPointID];
         };
-        /**开始 */
+        /**触摸开始 */
         GameContainer.prototype.touchBegin = function (e) {
             if (this.touchPoints[e.touchPointID] == null) {
                 this.touchPoints[e.touchPointID] = new egret.Point(e.stageX, e.stageY);
@@ -210,7 +211,7 @@ var fighter;
                 }
             }
         };
-        /**滑动 */
+        /**触摸滑动 */
         GameContainer.prototype.touchMoveIng = function (e) {
             if (this.touchPoints[e.touchPointID].x <= 320 && e.stageX > this.stageW / 2) {
                 this.liftBall.x = this.RoadPosition[1] - this.liftBall.width / 2;
@@ -225,13 +226,13 @@ var fighter;
         };
         /**画面刷新 */
         GameContainer.prototype.gameViewUpdate = function (evt) {
-            //egret.log(this.speed);
-            if ((GameContainer.myScore / 30) % 50 == 0 && GameContainer.myScore != 0) {
+            //egret.log(GameContainer.myScore,this.speed,GameContainer.addspeed,parseFloat(((this.obstacleCnt*this.speed)/300).toFixed(1)));
+            if ((GameContainer.myScore / 30) % 100 == 0 && GameContainer.myScore != 0) {
                 this.Invincible();
             }
-            if (GameContainer.myScore / 30 > 80)
-                this.speed = 13;
-            if (++this.obstacleCnt / 30 == this.obstacleSpace[this.obstacleNum]) {
+            if ((GameContainer.myScore / 30) % 80 == 0 && GameContainer.myScore != 0)
+                this.speed = this.speed * 6 / 5;
+            if (parseFloat(((++this.obstacleCnt * this.speed) / 300).toFixed(1)) == this.obstacleSpace[this.obstacleNum]) {
                 this.obstacleCnt = 0;
                 this.obstacleNum = (++this.obstacleNum) % this.obstacleSpace.length;
                 this.creatObstacle();
@@ -247,17 +248,20 @@ var fighter;
                     i--;
                     obstacleCount--;
                 }
-                theObstacle.y += this.speed;
+                theObstacle.y += (this.speed + GameContainer.addspeed);
             }
             if (this.reLive == true && this.obstacleCnt & 1)
                 this.gameHitTest();
-            GameContainer.myScore++;
-            this.myScoreText.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
+            GameContainer.myScore += parseInt(((this.speed + GameContainer.addspeed) / 10).toString());
+            this._ui._myScoreText.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
             if (this.reLive == false && ++this.count == 60) {
                 this.reLiveTimer--;
                 this.count = 0;
             }
             this.reLiveText.text = "无敌时间：" + this.reLiveTimer;
+            if (this.reLiveTimer == 3) {
+                GameContainer.addspeed = 0;
+            }
             if (this.reLiveTimer == 0) {
                 this.liftBall.filters = null;
                 this.rightBall.filters = null;
@@ -285,26 +289,19 @@ var fighter;
         };
         /**奖励无敌时间 */
         GameContainer.prototype.Invincible = function () {
-            this.rainHandler();
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
             this.reLive = false;
-            this.reLiveTimer = 10;
+            this.reLiveTimer = 8;
+            GameContainer.addspeed = 15;
             this.addChildAt(this.reLiveText, this.numChildren - 1);
-        };
-        GameContainer.prototype.rainHandler = function () {
-            if (this._rainParticle == null) {
-                var texture = RES.getRes("silver_png");
-                var config = RES.getRes("silverRain_json");
-                this._rainParticle = new particle.GravityParticleSystem(texture, config);
-                this.addChild(this._rainParticle);
-            }
-            this._rainParticle.start(5000);
         };
         /**游戏结束 */
         GameContainer.prototype.gameOver = function () {
             this.liftBall.filters = null;
             this.bg.pause();
+            this.soundChannel.stop();
+            this.soundDead.play(0, 1);
             this.liftBall.gotoAndPlay(1, 1);
             this.rightBall.gotoAndPlay(1, 1);
             this.removeEventListener(egret.Event.ENTER_FRAME, this.gameViewUpdate, this);
@@ -313,9 +310,6 @@ var fighter;
             this.removeEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchMoveIng, this);
             this.addChild(this.btnBack);
             this.btnBack.addEventListener(egret.TouchEvent.TOUCH_END, this.btnBackClick, this);
-            // window.onkeydown  = (e) => {
-            // 	this.btnBackClick();
-            // } 
             if (this.reLive) {
                 this.addChild(this.btnReLive);
                 this.btnReLive.addEventListener(egret.TouchEvent.TOUCH_TAP, this.reLiveClick, this);
@@ -330,7 +324,8 @@ var fighter;
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
             this.bg.start();
-            this.initBallPoition(20);
+            this.soundChannel = this.soundBgm.play(0, -1);
+            this.initBallPoition(15);
             this.liftBall.gotoAndPlay(1, -1);
             this.rightBall.gotoAndPlay(1, -1);
             this.addEventListener(egret.Event.ENTER_FRAME, this.gameViewUpdate, this);
@@ -342,6 +337,8 @@ var fighter;
         /**返回并初始化一部分数据 */
         GameContainer.prototype.btnBackClick = function () {
             var _this = this;
+            this._ui.Stop();
+            platform.setUserCloudStorage([{ key: "score", value: parseInt((GameContainer.myScore / 30).toString()) + "" }]);
             this.btnBack.removeEventListener(egret.TouchEvent.TOUCH_END, this.btnBackClick, this);
             var theObstacle;
             var obstacleCount = this.obstacles.length;
@@ -353,15 +350,15 @@ var fighter;
                 i--;
                 obstacleCount--;
             }
-            this.addChild(this.btnStart);
-            this.addEventListener(egret.TouchEvent.TOUCH_TAP, this.gameStart, this);
             window.onkeydown = function (e) {
                 _this.gameStart();
             };
             this.removeChild(this.btnBack);
             if (this.reLive == true)
                 this.removeChild(this.btnReLive);
-            this.initBallPoition(0);
+            this.removeChild(this.liftBall);
+            this.removeChild(this.rightBall);
+            //this.initBallPoition(0);
             GameContainer.myScore = 0;
             this.obstacleNum = 0;
             this.obstaclePosCnt = 0;
@@ -370,6 +367,8 @@ var fighter;
         };
         /**成绩*/
         GameContainer.myScore = 0;
+        /**奖励阶段加速 */
+        GameContainer.addspeed = 0;
         return GameContainer;
     }(egret.DisplayObjectContainer));
     fighter.GameContainer = GameContainer;

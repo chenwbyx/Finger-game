@@ -53,7 +53,7 @@ class Main extends eui.UILayer {
 
 
         this.runGame().catch(e => {
-            console.log(e);
+            //console.log(e);
         })
     }
 
@@ -64,8 +64,8 @@ class Main extends eui.UILayer {
         this.startAnimation(result);
         await platform.login();
         const userInfo = await platform.getUserInfo();
+        platform.sendShareData({command:"load"});
         console.log(userInfo);
-
     }
 
     private async loadResource() {
@@ -94,14 +94,25 @@ class Main extends eui.UILayer {
         })
     }
 
+    private onResizeStage(e:egret.Event=null):void
+    {
+        Config.StageWidth=this.stage.stageWidth;
+        Config.StageHeight=this.stage.stageHeight;
+        Config.StageHalfWidth=this.stage.stageWidth/2;
+        Config.StageHalfHeight=this.stage.stageHeight/2;
+    }
     private textfield: egret.TextField;
     /**
      * 创建场景界面
      * Create scene interface
      */
     protected createGameScene(): void {
-        var gameContainer:fighter.GameContainer = new fighter.GameContainer();
-        this.addChild(gameContainer);
+        this.onResizeStage();
+        this.addEventListener(egret.Event.RESIZE,this.onResizeStage,this);
+        this.addChild( fighter.GameContainer.Inst);
+        fighter.GameContainer.Inst.Init();
+        platform.sendShareData({command:"loadRes"});
+        platform.sendShareData({command:"getUserCloudStorage"});
     }
     /**
      * 描述文件加载成功，开始播放动画

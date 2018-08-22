@@ -53,14 +53,14 @@ module fighter {
 
         /**逐帧运动*/
         private enterFrameHandler(event:egret.Event):void {
-            if(GameContainer.myScore/30 > 80)
-				this.speed = 13;
-            else
+            if((GameContainer.myScore/30)%80 == 0 && GameContainer.myScore != 0)
+				this.speed = this.speed*6/5;
+            else if(GameContainer.myScore < 80)
                 this.speed = 10;
             for(var i:number=0;i<this.rowCount;i++)
             {
                 var bgBmp:egret.Bitmap = this.bmpArr[i];
-                bgBmp.y += this.speed;
+                bgBmp.y += (this.speed + GameContainer.addspeed);
                 //判断超出屏幕后，回到队首，这样来实现循环反复
                 if(bgBmp.y > this.stageH) {
                     bgBmp.y = this.bmpArr[0].y-this.textureHeight;
