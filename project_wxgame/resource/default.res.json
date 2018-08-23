@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "description_json,btn_back_png,btn_relive_png,sea_bg_png,sea_obstacle_1_png,sea_obstacle_2_png,sea_obstacle_3_png,sea_obstacle_4_png,sea_obstacle_0_png,sea_text_bg_png,sea_fish_2_png,sea_fish_3_png,btn_begin_png,r_fish_json,r_fish_png,l_fish_json,l_fish_png,btn_bg_png,BGM_InGame_mp3,SE_GameOver_mp3",
+			"keys": "description_json,BGM_InGame_mp3,SE_GameOver_mp3,l_fish_json,r_fish_json,sea_bg_png,sea_json,icon_png",
 			"name": "preload"
 		}
 	],
@@ -12,91 +12,6 @@
 			"url": "config/description.json"
 		},
 		{
-			"name": "btn_back_png",
-			"type": "image",
-			"url": "assets/btn_back.png"
-		},
-		{
-			"name": "btn_relive_png",
-			"type": "image",
-			"url": "assets/btn_relive.png"
-		},
-		{
-			"name": "sea_bg_png",
-			"type": "image",
-			"url": "assets/sea/sea_bg.png"
-		},
-		{
-			"name": "sea_obstacle_1_png",
-			"type": "image",
-			"url": "assets/sea/sea_obstacle_1.png"
-		},
-		{
-			"name": "sea_obstacle_2_png",
-			"type": "image",
-			"url": "assets/sea/sea_obstacle_2.png"
-		},
-		{
-			"name": "sea_obstacle_3_png",
-			"type": "image",
-			"url": "assets/sea/sea_obstacle_3.png"
-		},
-		{
-			"name": "sea_obstacle_4_png",
-			"type": "image",
-			"url": "assets/sea/sea_obstacle_4.png"
-		},
-		{
-			"name": "sea_obstacle_0_png",
-			"type": "image",
-			"url": "assets/sea/sea_obstacle_0.png"
-		},
-		{
-			"name": "sea_text_bg_png",
-			"type": "image",
-			"url": "assets/sea/sea_text_bg.png"
-		},
-		{
-			"name": "sea_fish_2_png",
-			"type": "image",
-			"url": "assets/sea/sea_fish_2.png"
-		},
-		{
-			"name": "sea_fish_3_png",
-			"type": "image",
-			"url": "assets/sea/sea_fish_3.png"
-		},
-		{
-			"name": "btn_begin_png",
-			"type": "image",
-			"url": "assets/btn_begin.png"
-		},
-		{
-			"name": "r_fish_json",
-			"type": "json",
-			"url": "assets/sea/r_fish.json"
-		},
-		{
-			"name": "r_fish_png",
-			"type": "image",
-			"url": "assets/sea/r_fish.png"
-		},
-		{
-			"name": "l_fish_json",
-			"type": "json",
-			"url": "assets/sea/l_fish.json"
-		},
-		{
-			"name": "l_fish_png",
-			"type": "image",
-			"url": "assets/sea/l_fish.png"
-		},
-		{
-			"name": "btn_bg_png",
-			"type": "image",
-			"url": "assets/btn_bg.png"
-		},
-		{
 			"name": "BGM_InGame_mp3",
 			"type": "sound",
 			"url": "assets/sound/BGM_InGame.mp3"
@@ -105,6 +20,32 @@
 			"name": "SE_GameOver_mp3",
 			"type": "sound",
 			"url": "assets/sound/SE_GameOver.mp3"
+		},
+		{
+			"name": "l_fish_json",
+			"type": "json",
+			"url": "assets/l_fish.json"
+		},
+		{
+			"name": "r_fish_json",
+			"type": "json",
+			"url": "assets/r_fish.json"
+		},
+		{
+			"name": "sea_bg_png",
+			"type": "image",
+			"url": "assets/sea_bg.png"
+		},
+		{
+			"name": "sea_json",
+			"type": "sheet",
+			"url": "assets/sea.json",
+			"subkeys": "l_fish_png,r_fish_png,sea_text_bg_png,sea_obstacle_2_png,sea_obstacle_4_png,sea_obstacle_0_png,sea_obstacle_1_png,sea_obstacle_3_png,btn_back_png,btn_bg_png,btn_relive_png"
+		},
+		{
+			"name": "icon_png",
+			"type": "image",
+			"url": "assets/icon.png"
 		}
 	]
 }

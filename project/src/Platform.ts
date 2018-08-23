@@ -13,10 +13,10 @@ declare interface Platform {
     login(): Promise<any>
     //分享
     showShareMenu(): Promise<any>
-    shareAppMessage(title:string,imgurl:string,query:string): Promise<any>
+    shareAppMessage(title:string,imgurl:string): Promise<any>
     updateShareMenu(withticket): Promise<any>
     //带标志发送
-    shareApp(title:string,imgurl:string,query:string): Promise<any>
+    shareApp(title:string,imgurl:string): Promise<any>
     //显示广告
     showAD():void;
     //存储排行数据
@@ -51,13 +51,13 @@ class DebugPlatform implements Platform {
 
     }
 
-    async shareAppMessage(title:string,imgurl:string,query:string): Promise<any>{}
+    async shareAppMessage(title:string,imgurl:string): Promise<any>{}
 
     sendShareData(kvobj:any){}
 
     getLaunchOptionsSync():any{}
 
-    async shareApp(title:string,imgurl:string,query:string): Promise<any>{}
+    async shareApp(title:string,imgurl:string): Promise<any>{}
 
     async updateShareMenu(withticket): Promise<any>{}
 }

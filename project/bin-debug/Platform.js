@@ -67,7 +67,7 @@ var DebugPlatform = (function () {
             });
         });
     };
-    DebugPlatform.prototype.getUserCloudStorage = function (kvobj) {
+    DebugPlatform.prototype.getUserCloudStorage = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/];
@@ -81,14 +81,14 @@ var DebugPlatform = (function () {
             });
         });
     };
-    DebugPlatform.prototype.shareAppMessage = function (title, imgurl, query) {
+    DebugPlatform.prototype.shareAppMessage = function (title, imgurl) {
         return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/];
         }); });
     };
     DebugPlatform.prototype.sendShareData = function (kvobj) { };
     DebugPlatform.prototype.getLaunchOptionsSync = function () { };
-    DebugPlatform.prototype.shareApp = function (title, imgurl, query) {
+    DebugPlatform.prototype.shareApp = function (title, imgurl) {
         return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/];
         }); });

@@ -38,12 +38,12 @@ class WxgamePlatform {
         openDataContext.postMessage(kvdata);
     }
 
-    shareAppMessage(title, imageUrl, query) {
+    shareAppMessage(title, imageUrl) {
         return new Promise((resolve, reject) => {
+            console.log(imageUrl);
             wx.shareAppMessage({
                 title: title,
                 imageUrl: imageUrl,
-                query: query,
                 success: res => {
                     resolve(true);
                 },
@@ -67,14 +67,13 @@ class WxgamePlatform {
             })
         })
     }
-    shareApp(title, imageUrl, query) {
+    shareApp(title, imageUrl) {
         return this.updateShareMenu(true).then((res) => {
             if (res) {
                 return new Promise((resolve, reject) => {
                     wx.shareAppMessage({
                         title: title,
                         imageUrl: imageUrl,
-                        query: query,
                         success: res => {
                             resolve(res);
                         },
@@ -92,7 +91,6 @@ class WxgamePlatform {
 
     setUserCloudStorage(KVDataList) {
         return new Promise((resolve, reject) => {
-            wx.
                 wx.setUserCloudStorage({
                     KVDataList: KVDataList,
                     success: res => {

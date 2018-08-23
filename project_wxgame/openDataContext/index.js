@@ -51,39 +51,8 @@ context.globalCompositeOperation = "source-over";
  * 排位序号i会根据parge*perPageNum+i+1进行计算
  */
 var totalGroup = [
-    //{
-    //     key: 1,
-    //     name: "1111111111",
-    //     url: assets.icon,
-    //     scroes: 10000
-    //   },
-    //   {
-    //     key: 2,
-    //     name: "2222222222",
-    //     url: assets.icon,
-    //     scroes: 9000
-    //   },
-    //   {
-    //     key: 3,
-    //     name: "3333333",
-    //     url: assets.icon,
-    //     scroes: 8000
-    //   },
-    //   {
-    //     key: 4,
-    //     name: "4444444",
-    //     url: assets.icon,
-    //     scroes: 7000
-    //   },
-    //   {
-    //     key: 5,
-    //     name: "55555555",
-    //     url: assets.icon,
-    //     scroes: 6000
-    //   },
-
+ 
 ];
-
 /**
  * 创建排行榜
  */
@@ -94,7 +63,7 @@ function drawRankPanel() {
     const title = assets.title;
     //根据title的宽高计算一下位置;
     const titleX = offsetX_rankToBorder + (rankWidth - title.width) / 2;
-    const titleY = offsetY_rankToBorder + title.height + 40;
+    const titleY = offsetY_rankToBorder + title.height + 10;
     context_drawImage(title, titleX, titleY);
     //获取当前要渲染的数据组
 
@@ -113,7 +82,7 @@ function drawRankPanel() {
 function init() {
     //排行榜绘制数据初始化,可以在此处进行修改
     rankWidth = stageWidth * 4 / 5;
-    rankHeight = stageHeight * 4 / 5;
+    rankHeight = stageHeight * 3 / 4;
     barWidth = rankWidth * 4 / 5;
     barHeight = rankWidth / perPageMaxNum;
     offsetX_rankToBorder = (stageWidth - rankWidth) / 2;
@@ -485,7 +454,6 @@ function addOpenDataContextListener() {
         } else if (data.command == 'getUserCloudStorage') {
             getUserCloudStorageInfo();
         } else if (data.command == 'setUserCloudStorage') {
-            console.log("chen", parseInt(data.type), userScore);
             if (data.type != "" && parseInt(data.type) > userScore) {
                 userScore = parseInt(data.type);
                 setUserCloudStorageInfo([{ key: "score", value: data.type }]);
@@ -519,9 +487,7 @@ function setFirendList() {
         success: res => {
             console.log("getFriendCloudStorage", res);
             if (!res.data) { return; }
-            console.log("qqq", 1);
             kvlist2totogroup(res.data);
-
         },
         fail: err => {
             console.log(err);

@@ -1,0 +1,12 @@
+{"file":"sea.png","frames":{
+"l_fish_png":{"x":190,"y":0,"w":190,"h":90,"offX":0,"offY":0,"sourceW":256,"sourceH":128},
+"r_fish_png":{"x":0,"y":0,"w":190,"h":90,"offX":0,"offY":0,"sourceW":256,"sourceH":128},
+"sea_text_bg_png":{"x":250,"y":90,"w":140,"h":93,"offX":0,"offY":0,"sourceW":140,"sourceH":93},
+"sea_obstacle_2_png":{"x":390,"y":95,"w":95,"h":94,"offX":0,"offY":0,"sourceW":96,"sourceH":94},
+"sea_obstacle_4_png":{"x":390,"y":0,"w":96,"h":95,"offX":0,"offY":0,"sourceW":96,"sourceH":95},
+"sea_obstacle_0_png":{"x":192,"y":183,"w":96,"h":67,"offX":0,"offY":0,"sourceW":96,"sourceH":67},
+"sea_obstacle_1_png":{"x":96,"y":148,"w":96,"h":74,"offX":0,"offY":0,"sourceW":96,"sourceH":74},
+"sea_obstacle_3_png":{"x":0,"y":148,"w":96,"h":90,"offX":0,"offY":0,"sourceW":96,"sourceH":90},
+"btn_back_png":{"x":351,"y":189,"w":116,"h":23,"offX":10,"offY":4,"sourceW":132,"sourceH":28},
+"btn_bg_png":{"x":288,"y":183,"w":63,"h":63,"offX":0,"offY":0,"sourceW":63,"sourceH":63},
+"btn_relive_png":{"x":0,"y":90,"w":250,"h":58,"offX":0,"offY":0,"sourceW":250,"sourceH":58}}}

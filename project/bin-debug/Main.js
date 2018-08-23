@@ -179,6 +179,7 @@ var Main = (function (_super) {
         this.addChild(fighter.GameContainer.Inst);
         fighter.GameContainer.Inst.Init();
         platform.sendShareData({ command: "loadRes" });
+        platform.sendShareData({ command: "getUserCloudStorage" });
     };
     /**
      * 描述文件加载成功，开始播放动画
