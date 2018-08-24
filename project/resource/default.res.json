@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "description_json,BGM_InGame_mp3,SE_GameOver_mp3,l_fish_json,r_fish_json,sea_bg_png,sea_json,icon_png",
+			"keys": "description_json,BGM_InGame_mp3,SE_GameOver_mp3,l_fish_json,r_fish_json,sea_bg_png,icon_png,sea_json",
 			"name": "preload"
 		}
 	],
@@ -37,15 +37,15 @@
 			"url": "assets/sea_bg.png"
 		},
 		{
-			"name": "sea_json",
-			"type": "sheet",
-			"url": "assets/sea.json",
-			"subkeys": "l_fish_png,r_fish_png,sea_text_bg_png,sea_obstacle_2_png,sea_obstacle_4_png,sea_obstacle_0_png,sea_obstacle_1_png,sea_obstacle_3_png,btn_back_png,btn_bg_png,btn_relive_png"
-		},
-		{
 			"name": "icon_png",
 			"type": "image",
 			"url": "assets/icon.png"
+		},
+		{
+			"name": "sea_json",
+			"type": "sheet",
+			"url": "assets/sea.json",
+			"subkeys": "r_fish_png,l_fish_png,btn_relive_png,sea_text_bg_png,sea_obstacle_2_png,sea_obstacle_4_png,sea_obstacle_1_png,sea_obstacle_3_png,sea_obstacle_0_png,btn_bg_png,bgm_open_png,bgm_close_png,btn_back_png"
 		}
 	]
 }

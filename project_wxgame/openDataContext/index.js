@@ -15,13 +15,11 @@
  * 之后可通过assets.引用名方式进行获取
  */
 const assetsUrl = {
-    icon: "openDataContext/assets/icon.png",
-    box: "openDataContext/assets/box.png",
-    panel: "openDataContext/assets/panel.png",
-    button_l: "openDataContext/assets/button_l.png",
-    button_r: "openDataContext/assets/button_r.png",
-    title: "openDataContext/assets/rankingtitle.png",
-    close: "openDataContext/assets/close.png"
+    button: "openDataContext/assets/button.png",
+    close: "openDataContext/assets/close.png",
+    first: "openDataContext/assets/first.png",
+    second: "openDataContext/assets/second.png",
+    third: "openDataContext/assets/third.png",
 };
 
 /**
@@ -58,14 +56,19 @@ var totalGroup = [
  */
 function drawRankPanel() {
     //绘制背景
-    context_drawImage(assets.panel, offsetX_rankToBorder, offsetY_rankToBorder, rankWidth, rankHeight);
-    //绘制标题
-    const title = assets.title;
-    //根据title的宽高计算一下位置;
-    const titleX = offsetX_rankToBorder + (rankWidth - title.width) / 2;
-    const titleY = offsetY_rankToBorder + title.height + 10;
-    context_drawImage(title, titleX, titleY);
-    //获取当前要渲染的数据组
+    context.restore();
+    context.save();
+    context.clearRect(offsetX_rankToBorder, offsetY_rankToBorder, rankWidth, rankHeight);
+    //context.scale(ratio, ratio);
+    // 背景
+    context.fillStyle = 'rgba(245, 245, 245, 1)';
+    context.fillRect(offsetX_rankToBorder, offsetY_rankToBorder, rankWidth, rankHeight);
+    context.fillStyle = 'rgba(44,132,214, 1)';
+    context.fillRect(offsetX_rankToBorder, offsetY_rankToBorder, rankWidth, 100);
+    // 标题
+    context.fillStyle = '#FFFFFF'
+    context.font = 'bold 50px Arial'
+    context.fillText('排行榜', stageWidth / 2 - 80, offsetY_rankToBorder + 70)
 
     //起始id
     const startID = perPageMaxNum * page;
@@ -75,6 +78,7 @@ function drawRankPanel() {
     //创建按钮
     drawButton();
     drawCloseButton();
+    drawCloseButtonText();
 }
 /**
  * 根据屏幕大小初始化所有绘制数据
@@ -115,23 +119,34 @@ function init() {
 }
 
 function drawCloseButton() {
-    context_drawImage(assets.close, closeBtnX, closeBtnY, closeBtnWidth, closeBtnHeight);
+    context_drawImage(assets.close, closeBtnX-5, closeBtnY+5, closeBtnWidth, closeBtnHeight);
 }
 
 /**
  * 创建两个点击按钮
  */
 function drawButton() {
-    context_drawImage(assets.button_r, nextButtonX, nextButtonY, buttonWidth, buttonHeight);
-    context_drawImage(assets.button_l, lastButtonX, lastButtonY, buttonWidth, buttonHeight);
+    context_drawImage(assets.button, nextButtonX, nextButtonY, buttonWidth, buttonHeight)
+    context_drawImage(assets.button, lastButtonX, lastButtonY, buttonWidth, buttonHeight);
 }
-
+function drawCloseButtonText() {
+    context.fillStyle = '#0f0f0f';
+    context.font = '30px Arial';
+    context.fillText('上一页', lastButtonX + 30, lastButtonY + 40);
+    context.fillText('下一页', nextButtonX + 30, nextButtonY + 40);
+}
 
 /**
  * 根据当前绘制组绘制排行榜
  */
 function drawRankByGroup(currentGroup) {
     for (let i = 0; i < currentGroup.length; i++) {
+        if (i != 0){
+            context.strokeStyle = "#6E6E6E";
+            context.moveTo(offsetX_rankToBorder + 80, startY + i * preOffsetY + textOffsetY - 90);
+            context.lineTo(offsetX_rankToBorder + rankWidth - 80, startY + i * preOffsetY + textOffsetY - 90);
+            context.stroke(); 
+        }
         const data = currentGroup[i];
         drawByData(data, i);
     }
@@ -143,13 +158,20 @@ function drawRankByGroup(currentGroup) {
 function drawByData(data, i) {
     let x = startX;
     //绘制底框
-    context_drawImage(assets.box, startX, startY + i * preOffsetY, barWidth, barHeight);
+    //context_drawImage(assets.box, startX, startY + i * preOffsetY, barWidth, barHeight);
     x += 10;
     //设置字体
     context.font = fontSize + "px Arial";
-    context.fillStyle = "0xffffff";
+    context.fillStyle = "#0F0F0F";
     //绘制序号
-    context.fillText(data.key + 1 + "", x, startY + i * preOffsetY + textOffsetY, textMaxSize);
+    if (data.key + 1 == 1)
+        context_drawImage(assets.first, x - 20, startY + i * preOffsetY + textOffsetY - 30, textMaxSize);
+    else if (data.key + 1 == 2)
+        context_drawImage(assets.second, x - 20, startY + i * preOffsetY + textOffsetY - 30, textMaxSize);
+    else if (data.key + 1 == 3)
+        context_drawImage(assets.third, x - 20, startY + i * preOffsetY + textOffsetY - 30, textMaxSize);
+    else
+        context.fillText(data.key + 1 + "", x, startY + i * preOffsetY + textOffsetY, textMaxSize);
     x += indexWidth + intervalX;
     //绘制头像
     var image = wx.createImage();
@@ -179,7 +201,6 @@ function onTouchEnd(event) {
         //在last按钮的范围内
         if (page > 0) {
             buttonClick(0);
-
         }
     }
     if (x > nextButtonX && x < nextButtonX + buttonWidth &&
@@ -195,7 +216,6 @@ function onTouchEnd(event) {
         cancelAnimationFrame(requestAnimationFrameID);
         requestAnimationFrameID = null;
         context.clearRect(offsetX_rankToBorder - closeBtnWidth / 2, offsetY_rankToBorder - closeBtnWidth / 2, rankWidth + closeBtnWidth ,rankHeight + closeBtnHeight);
-        console.log("close");
     }
 }
 /**
@@ -211,7 +231,6 @@ function buttonClick(buttonKey) {
         lastButtonY += 10;
         page--;
         renderDirty = true;
-        console.log('上一页' + page);
         setTimeout(() => {
             lastButtonY = old_buttonY;
             //重新渲染必须标脏
@@ -223,7 +242,6 @@ function buttonClick(buttonKey) {
         nextButtonY += 10;
         page++;
         renderDirty = true;
-        console.log('下一页' + page);
         setTimeout(() => {
             nextButtonY = old_buttonY;
             //重新渲染必须标脏

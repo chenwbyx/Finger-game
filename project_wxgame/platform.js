@@ -40,7 +40,6 @@ class WxgamePlatform {
 
     shareAppMessage(title, imageUrl) {
         return new Promise((resolve, reject) => {
-            console.log(imageUrl);
             wx.shareAppMessage({
                 title: title,
                 imageUrl: imageUrl,

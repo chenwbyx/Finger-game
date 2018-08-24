@@ -27,12 +27,12 @@ var fighter;
             this._myScoreText.text = parseInt((fighter.GameContainer.myScore / 30).toString()) + "米";
             this._myScoreText.anchorOffsetX = 35;
             this._myScoreText.x = Config.StageHalfWidth;
-            this._myScoreText.y = 35;
+            this._myScoreText.y = 75;
             this._myScoreText.size = 35;
             this._myScoreText.visible = false;
             this._myScoreTextBg = this.createBitmapByName("sea_text_bg_png");
             this._myScoreTextBg.x = Config.StageHalfWidth - 70;
-            this._myScoreTextBg.y = 10;
+            this._myScoreTextBg.y = 50;
             this._myScoreTextBg.visible = false;
             this.addChild(this._myScoreTextBg);
             this.addChild(this._myScoreText);
@@ -65,6 +65,13 @@ var fighter;
             this._shpTextCon.textColor = 0x0F0F0F;
             this._shpTextCon.visible = false;
             this.addChild(this._shpTextCon);
+            this._bgmIcon = this.createBitmapByName("bgm_open_png");
+            this._bgmIcon.x = 40;
+            this._bgmIcon.y = 20;
+            this._bgmIcon.touchEnabled = true;
+            this._bgmIcon.addEventListener(egret.TouchEvent.TOUCH_TAP, this.bgmControl, this);
+            this.addChild(this._bgmIcon);
+            this._bgmFlag = true;
             this._startBtn = new fighter.Button();
             this._startBtn.Init("btn_bg_png", "开始游戏", this.start, this);
             this.addChild(this._startBtn);
@@ -131,6 +138,7 @@ var fighter;
         };
         UI.prototype.friendRank = function () {
             platform.sendShareData({ command: "open", type: "friend" });
+            //创建开放数据域显示对象
             this._rankBit = platform.openDataContext.createDisplayObject(null, this.stage.stageWidth, this.stage.stageHeight);
             this._rankBit.touchEnabled = true;
             this._rankBit.pixelHitTest = true;
@@ -169,6 +177,18 @@ var fighter;
         UI.prototype.share = function () {
             var imgurl = "resource/assets/icon.png";
             platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl);
+        };
+        UI.prototype.bgmControl = function () {
+            if (this._bgmFlag) {
+                egret.log("closebgm");
+                this._bgmFlag = false;
+                this._bgmIcon.texture = RES.getRes("bgm_close_png");
+            }
+            else {
+                egret.log("openbgm");
+                this._bgmFlag = true;
+                this._bgmIcon.texture = RES.getRes("bgm_open_png");
+            }
         };
         UI.prototype.createBitmapByName = function (name) {
             var result = new egret.Bitmap();

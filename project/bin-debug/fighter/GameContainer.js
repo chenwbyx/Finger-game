@@ -107,7 +107,8 @@ var fighter;
         GameContainer.prototype.gameStart = function () {
             var _this = this;
             this._ui.Run();
-            this.soundChannel = this.soundBgm.play(0, -1);
+            if (this._ui._bgmFlag)
+                this.soundChannel = this.soundBgm.play(0, -1);
             //小球
             this.creatBall();
             GameContainer.myScore = 0;
@@ -270,7 +271,7 @@ var fighter;
                 this.reLive = true;
                 this.reLiveTimer = 5;
             }
-            if (this.stage.frameRate < 30) {
+            if (this.stage.frameRate < 45) {
                 egret.log("帧率" + this.stage.frameRate);
                 egret.log(GameContainer.myScore, this.speed, GameContainer.addspeed, parseFloat(((this.obstacleCnt * this.speed) / 300).toFixed(1)));
                 egret.log(this.obstacles.length);
@@ -317,7 +318,8 @@ var fighter;
                     _this.btnReLive.visible = true;
             });
             this.soundChannel.stop();
-            this.soundDead.play(0, 1);
+            if (this._ui._bgmFlag)
+                this.soundDead.play(0, 1);
             this.liftBall.gotoAndPlay(1, 1);
             this.rightBall.gotoAndPlay(1, 1);
             this.removeEventListener(egret.Event.ENTER_FRAME, this.gameViewUpdate, this);
@@ -334,7 +336,8 @@ var fighter;
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
             this.bg.start();
-            this.soundChannel = this.soundBgm.play(0, -1);
+            if (this._ui._bgmFlag)
+                this.soundChannel = this.soundBgm.play(0, -1);
             this.initBallPoition(15);
             this.liftBall.gotoAndPlay(1, -1);
             this.rightBall.gotoAndPlay(1, -1);

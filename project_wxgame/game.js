@@ -17,7 +17,7 @@ egret.runEgret({
 		scaleMode: "fixedWidth",
 		contentWidth: 640,
 		contentHeight: 1136,
-		showFPS: true,
+		showFPS: false,
 		fpsStyles: "x:0,y:0,size:12,textColor:0xffffff,bgAlpha:0.9",
 		showLog: true,
 		maxTouches: 3,

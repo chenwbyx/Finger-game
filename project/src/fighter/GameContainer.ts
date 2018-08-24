@@ -113,7 +113,8 @@ module fighter {
     	}
 		public gameStart(): void {
 			this._ui.Run();
-			this.soundChannel = this.soundBgm.play(0,-1);
+			if(this._ui._bgmFlag)
+				this.soundChannel = this.soundBgm.play(0,-1);
 			//小球
 			this.creatBall();
 			GameContainer.myScore = 0;
@@ -342,7 +343,8 @@ module fighter {
 					this.btnReLive.visible = true;
 			});
 			this.soundChannel.stop();
-			this.soundDead.play(0, 1);
+			if(this._ui._bgmFlag)
+				this.soundDead.play(0, 1);
 			this.liftBall.gotoAndPlay(1, 1);
 			this.rightBall.gotoAndPlay(1, 1);
 			this.removeEventListener(egret.Event.ENTER_FRAME, this.gameViewUpdate, this);
@@ -360,7 +362,8 @@ module fighter {
 			this.liftBall.filters = [this.glowFilter];
 			this.rightBall.filters = [this.glowFilter];
 			this.bg.start();
-			this.soundChannel = this.soundBgm.play(0, -1);
+			if(this._ui._bgmFlag)
+				this.soundChannel = this.soundBgm.play(0, -1);
 			this.initBallPoition(15);
 			this.liftBall.gotoAndPlay(1, -1);
 			this.rightBall.gotoAndPlay(1, -1);

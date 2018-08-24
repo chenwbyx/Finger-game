@@ -15,6 +15,9 @@ module fighter {
 		private _shp:egret.Shape = new egret.Shape();
 		private _shpTextTitle: eui.Label = new eui.Label();
 		public _shpTextCon: eui.Label = new eui.Label();
+		/**声音图标 */
+		private _bgmIcon: egret.Bitmap;
+		public _bgmFlag: boolean;
 		public constructor() {
 			super();
 		}
@@ -24,12 +27,12 @@ module fighter {
 			this._myScoreText.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
 			this._myScoreText.anchorOffsetX = 35;
 			this._myScoreText.x = Config.StageHalfWidth;
-			this._myScoreText.y = 35;
+			this._myScoreText.y = 75;
 			this._myScoreText.size = 35;
 			this._myScoreText.visible = false;
 			this._myScoreTextBg = this.createBitmapByName("sea_text_bg_png");
 			this._myScoreTextBg.x = Config.StageHalfWidth - 70;
-			this._myScoreTextBg.y = 10;
+			this._myScoreTextBg.y = 50;
 			this._myScoreTextBg.visible = false;
 			this.addChild(this._myScoreTextBg);
 			this.addChild(this._myScoreText);
@@ -65,6 +68,14 @@ module fighter {
 			this._shpTextCon.visible = false;
 			this.addChild(this._shpTextCon);
 
+			this._bgmIcon = this.createBitmapByName("bgm_open_png");
+			this._bgmIcon.x = 40;
+			this._bgmIcon.y = 20;
+			this._bgmIcon.touchEnabled = true;
+			this._bgmIcon.addEventListener(egret.TouchEvent.TOUCH_TAP, this.bgmControl, this);
+			this.addChild(this._bgmIcon);
+			this._bgmFlag = true;
+			
 			this._startBtn = new fighter.Button();
 			this._startBtn.Init("btn_bg_png", "开始游戏", this.start, this);
 			this.addChild(this._startBtn);
@@ -147,6 +158,7 @@ module fighter {
 
 		private friendRank(): void {
 			platform.sendShareData({ command: "open", type: "friend" });
+			//创建开放数据域显示对象
 			this._rankBit = platform.openDataContext.createDisplayObject(null, this.stage.stageWidth, this.stage.stageHeight);
 			this._rankBit.touchEnabled = true;
 			this._rankBit.pixelHitTest = true;
@@ -186,6 +198,16 @@ module fighter {
 		private share(): void {
 			var imgurl: string = "resource/assets/icon.png";
 			platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl);
+		}
+
+		private bgmControl():void{
+			if(this._bgmFlag){
+				this._bgmFlag = false;
+				this._bgmIcon.texture = RES.getRes("bgm_close_png");
+			}else{
+				this._bgmFlag = true;
+				this._bgmIcon.texture = RES.getRes("bgm_open_png");
+			}
 		}
 
 		private createBitmapByName(name: string): egret.Bitmap {
