@@ -59,4 +59,3 @@ var fighter;
     fighter.Button = Button;
     __reflect(Button.prototype, "fighter.Button");
 })(fighter || (fighter = {}));
-//# sourceMappingURL=Button.js.map

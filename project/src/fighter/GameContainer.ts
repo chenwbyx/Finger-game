@@ -5,10 +5,6 @@ module fighter {
 		private stageW: number;
 		/**@private*/
 		private stageH: number;
-		/**返回按钮 */
-		private btnBack: egret.Bitmap;
-		/**复活按钮 */
-		private btnReLive: egret.Bitmap;
 		/**小球 */
 		private rightBall: egret.MovieClip;
 		private liftBall: egret.MovieClip;
@@ -23,16 +19,18 @@ module fighter {
 		/**奖励阶段加速 */
 		public static addspeed: number = 0;
 		/**障碍物间隔 */
-		private obstacleSpace: number[] = [1.5, 1.3, 1.4, 1.3, 1.5, 1.1, 1.4, 1.5, 1, 1.4, 1.3, 1.2, 1.5];
+		private obstacleSpace: number[] = [1.5, 1.3, 1.4, 1, 1.5, 1.1, 1.4, 1.4, 1, 1.4, 1.3, 1.2, 1.5, 1.4, 1.3, 1.5, 1.1, 1.4];
 		private obstacleNum: number = 0; //obstacleSpace的迭代器
 		private obstacleCnt = 0; //每帧+1，每30使obstacleNum+1
 		/**障碍物的位置 */
-		private obstaclePosition: number[] = [1, 2, 3, 4, 4, 3, 2, 1, 2, 4, 2, 3, 1, 4, 1, 4, 3, 2, 4, 1, 1, 1, 4, 3, 4, 3, 2, 1];
+		private obstaclePosition: number[] = [1, 2, 3, 4, 4, 3, 2, 1, 2, 4, 2, 3, 1, 4, 1, 4, 3, 2, 4, 1, 1, 1, 4, 3, 4, 3, 2, 1, 1, 2, 3, 2, 4, 4, 3, 2, 4, 3, 2, 1, 2, 4, 2, 3, 1, 4];
 		private obstaclePosCnt = 0;  //obstaclePosition的迭代器
 		/**道路位置 */
 		private RoadPosition: number[] = [];
 		/**是否可以复活 */
-		private reLive: boolean = true;
+		public reLive: number = -1;
+		/**是否处于无敌状态 */
+		private isReLiveIng: boolean = false;
 		/**无敌时间*/
 		private reLiveTimer: number = 5;
 		/**显示无敌时间的文本 */
@@ -47,7 +45,7 @@ module fighter {
 		private soundDead:egret.Sound = new egret.Sound();
     	private soundChannel:egret.SoundChannel;
 		/**开始界面 */
-		private _ui: fighter.UI;
+		public _ui: fighter.UI;
 		/**被实例化时执行*/
 		public constructor() {
 			super();
@@ -62,22 +60,7 @@ module fighter {
 			this._ui = new fighter.UI();
 			this.addChild(this._ui);
 			this._ui.Init();
-			//创建返回按钮
-			this.btnBack = this.createBitmapByName("btn_back_png");
-			this.btnBack.x = (this.stageW - this.btnBack.width) / 2;
-			this.btnBack.y = this.stageH * 6 / 7;
-			this.btnBack.touchEnabled = true;
-			this.btnBack.visible = false;
-			this.addChild(this.btnBack);
-			this.btnBack.addEventListener(egret.TouchEvent.TOUCH_END, this.btnBackClick, this);
-			//创建复活按钮
-			this.btnReLive = this.createBitmapByName("btn_relive_png");
-			this.btnReLive.x = (this.stageW - this.btnReLive.width) / 2;
-			this.btnReLive.y = (this.stageH - this.btnReLive.height)* 8/10 ;
-			this.btnReLive.touchEnabled = true;
-			this.btnReLive.visible = false;
-			this.addChild(this.btnReLive);
-			this.btnReLive.addEventListener(egret.TouchEvent.TOUCH_TAP, this.reLiveClick, this);
+			
 			//初始化道路（轨迹）位置
 			for (var i = 0; i < 4; ++i) {
 				this.RoadPosition[i] = this.stageW / 8 + i * this.stageW / 4;
@@ -254,7 +237,7 @@ module fighter {
 				this.Invincible();
 			}
 			if ((GameContainer.myScore / 30) % 80 == 0 && GameContainer.myScore != 0)
-				this.speed = this.speed * 6 / 5;
+				this.speed = (this.speed * 6 / 5) > 17 ? 17 : this.speed * 6 / 5;
 			if (parseFloat(((++this.obstacleCnt * this.speed) / 300).toFixed(1)) == this.obstacleSpace[this.obstacleNum]) {
 				this.obstacleCnt = 0;
 				this.obstacleNum = (++this.obstacleNum) % this.obstacleSpace.length;
@@ -273,11 +256,11 @@ module fighter {
 				}
 				theObstacle.y += (this.speed + GameContainer.addspeed);
 			}
-			if (this.reLive == true && this.obstacleCnt & 1)
+			if (this.isReLiveIng == false && this.obstacleCnt & 1)
 				this.gameHitTest();
 			GameContainer.myScore += parseInt(((this.speed + GameContainer.addspeed) / 10).toString());
 			this._ui._myScoreText.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
-			if (this.reLive == false && ++this.count == 60) {
+			if (this.isReLiveIng == true && ++this.count == 60) {
 				this.reLiveTimer--;
 				this.count = 0;
 			}
@@ -289,7 +272,7 @@ module fighter {
 				this.liftBall.filters = null;
 				this.rightBall.filters = null;
 				this.removeChild(this.reLiveText);
-				this.reLive = true;
+				this.isReLiveIng = false;
 				this.reLiveTimer = 5;
 			}
 			if(this.stage.frameRate < 45){
@@ -322,13 +305,13 @@ module fighter {
 		private Invincible(): void {
 			this.liftBall.filters = [this.glowFilter];
 			this.rightBall.filters = [this.glowFilter];
-			this.reLive = false;
-			this.reLiveTimer = 8;
+			this.isReLiveIng = true;
+			this.reLiveTimer = 5;
 			GameContainer.addspeed = 15;
 			this.addChildAt(this.reLiveText, this.numChildren - 1);
 		}
 
-		private sleep(time) {
+		private sleep(time) { 
 			return new Promise((resolve) => setTimeout(resolve, time));
 		}
 
@@ -338,9 +321,6 @@ module fighter {
 			this._ui._shpTextCon.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
 			this.sleep(1000).then(() => {
 				this._ui.pause();
-				this.btnBack.visible = true;
-				if (this.reLive)
-					this.btnReLive.visible = true;
 			});
 			this.soundChannel.stop();
 			if(this._ui._bgmFlag)
@@ -354,11 +334,11 @@ module fighter {
 		}
 
 		/**复活 */
-		private reLiveClick(): void {
+		public reLiveClick(): void {
 			this._ui.Run();
-			this.reLive = false;
-			this.btnBack.visible = false;
-			this.btnReLive.visible = false;
+			this.isReLiveIng = true;
+			--this.reLive;
+			platform.setUserRelive(this.reLive);
 			this.liftBall.filters = [this.glowFilter];
 			this.rightBall.filters = [this.glowFilter];
 			this.bg.start();
@@ -375,7 +355,7 @@ module fighter {
 		}
 
 		/**返回并初始化一部分数据 */
-		private btnBackClick(): void {
+		public btnBackClick(): void {
 			this._ui.Stop();
 			platform.sendShareData({ command: "setUserCloudStorage", type: parseInt((GameContainer.myScore / 30).toString()) + "" });
 			var theObstacle: fighter.MyObject;
@@ -391,15 +371,11 @@ module fighter {
 			window.onkeydown = (e) => {
 				this.gameStart();
 			}
-			this.btnBack.visible = false;
-			if (this.reLive == true)
-				this.btnReLive.visible = false;
 			this.removeChild(this.liftBall);
 			this.removeChild(this.rightBall);
 			GameContainer.myScore = 0;
 			this.obstacleNum = 0;
 			this.obstaclePosCnt = 0;
-			this.reLive = true;
 			this.speed = 10;
 		}
 	}

@@ -116,7 +116,6 @@ var Main = (function (_super) {
                     case 4:
                         userInfo = _a.sent();
                         platform.sendShareData({ command: "load" });
-                        console.log(userInfo);
                         return [2 /*return*/];
                 }
             });
@@ -211,4 +210,3 @@ var Main = (function (_super) {
     return Main;
 }(eui.UILayer));
 __reflect(Main.prototype, "Main");
-//# sourceMappingURL=Main.js.map

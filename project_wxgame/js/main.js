@@ -286,14 +286,14 @@ var Main = (function (_super) {
                     case 2:
                         result = _a.sent();
                         this.startAnimation(result);
+                        //console.log("enter runGame");
                         return [4 /*yield*/, platform.login()];
                     case 3:
+                        //console.log("enter runGame");
                         _a.sent();
                         return [4 /*yield*/, platform.getUserInfo()];
                     case 4:
                         userInfo = _a.sent();
-                        platform.sendShareData({ command: "load" });
-                        console.log(userInfo);
                         return [2 /*return*/];
                 }
             });
@@ -357,6 +357,17 @@ var Main = (function (_super) {
         fighter.GameContainer.Inst.Init();
         platform.sendShareData({ command: "loadRes" });
         platform.sendShareData({ command: "getUserCloudStorage" });
+        platform.getUserRelive().then(function (res) {
+            if (res == false) {
+                platform.setUserRelive(5);
+                fighter.GameContainer.Inst.reLive = 5;
+                fighter.GameContainer.Inst._ui._reliveText.text = 5 + "";
+            }
+            else {
+                fighter.GameContainer.Inst.reLive = res;
+                fighter.GameContainer.Inst._ui._reliveText.text = res + "";
+            }
+        });
     };
     /**
      * 描述文件加载成功，开始播放动画
@@ -449,6 +460,20 @@ var DebugPlatform = (function () {
         return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/];
         }); });
+    };
+    DebugPlatform.prototype.setUserRelive = function (num) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
+    DebugPlatform.prototype.getUserRelive = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
     };
     return DebugPlatform;
 }());
@@ -594,16 +619,18 @@ var fighter;
             /**速度 */
             _this.speed = 10;
             /**障碍物间隔 */
-            _this.obstacleSpace = [1.5, 1.3, 1.4, 1.3, 1.5, 1.1, 1.4, 1.5, 1, 1.4, 1.3, 1.2, 1.5];
+            _this.obstacleSpace = [1.5, 1.3, 1.4, 1, 1.5, 1.1, 1.4, 1.4, 1, 1.4, 1.3, 1.2, 1.5, 1.4, 1.3, 1.5, 1.1, 1.4];
             _this.obstacleNum = 0; //obstacleSpace的迭代器
             _this.obstacleCnt = 0; //每帧+1，每30使obstacleNum+1
             /**障碍物的位置 */
-            _this.obstaclePosition = [1, 2, 3, 4, 4, 3, 2, 1, 2, 4, 2, 3, 1, 4, 1, 4, 3, 2, 4, 1, 1, 1, 4, 3, 4, 3, 2, 1];
+            _this.obstaclePosition = [1, 2, 3, 4, 4, 3, 2, 1, 2, 4, 2, 3, 1, 4, 1, 4, 3, 2, 4, 1, 1, 1, 4, 3, 4, 3, 2, 1, 1, 2, 3, 2, 4, 4, 3, 2, 4, 3, 2, 1, 2, 4, 2, 3, 1, 4];
             _this.obstaclePosCnt = 0; //obstaclePosition的迭代器
             /**道路位置 */
             _this.RoadPosition = [];
             /**是否可以复活 */
-            _this.reLive = true;
+            _this.reLive = -1;
+            /**是否处于无敌状态 */
+            _this.isReLiveIng = false;
             /**无敌时间*/
             _this.reLiveTimer = 5;
             /**显示无敌时间的文本 */
@@ -628,22 +655,6 @@ var fighter;
             this._ui = new fighter.UI();
             this.addChild(this._ui);
             this._ui.Init();
-            //创建返回按钮
-            this.btnBack = this.createBitmapByName("btn_back_png");
-            this.btnBack.x = (this.stageW - this.btnBack.width) / 2;
-            this.btnBack.y = this.stageH * 6 / 7;
-            this.btnBack.touchEnabled = true;
-            this.btnBack.visible = false;
-            this.addChild(this.btnBack);
-            this.btnBack.addEventListener(egret.TouchEvent.TOUCH_END, this.btnBackClick, this);
-            //创建复活按钮
-            this.btnReLive = this.createBitmapByName("btn_relive_png");
-            this.btnReLive.x = (this.stageW - this.btnReLive.width) / 2;
-            this.btnReLive.y = (this.stageH - this.btnReLive.height) * 8 / 10;
-            this.btnReLive.touchEnabled = true;
-            this.btnReLive.visible = false;
-            this.addChild(this.btnReLive);
-            this.btnReLive.addEventListener(egret.TouchEvent.TOUCH_TAP, this.reLiveClick, this);
             //初始化道路（轨迹）位置
             for (var i = 0; i < 4; ++i) {
                 this.RoadPosition[i] = this.stageW / 8 + i * this.stageW / 4;
@@ -826,11 +837,11 @@ var fighter;
                 }
                 theObstacle.y += (this.speed + GameContainer.addspeed);
             }
-            if (this.reLive == true && this.obstacleCnt & 1)
+            if (this.isReLiveIng == false && this.obstacleCnt & 1)
                 this.gameHitTest();
             GameContainer.myScore += parseInt(((this.speed + GameContainer.addspeed) / 10).toString());
             this._ui._myScoreText.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
-            if (this.reLive == false && ++this.count == 60) {
+            if (this.isReLiveIng == true && ++this.count == 60) {
                 this.reLiveTimer--;
                 this.count = 0;
             }
@@ -842,7 +853,7 @@ var fighter;
                 this.liftBall.filters = null;
                 this.rightBall.filters = null;
                 this.removeChild(this.reLiveText);
-                this.reLive = true;
+                this.isReLiveIng = false;
                 this.reLiveTimer = 5;
             }
             if (this.stage.frameRate < 45) {
@@ -872,8 +883,8 @@ var fighter;
         GameContainer.prototype.Invincible = function () {
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
-            this.reLive = false;
-            this.reLiveTimer = 8;
+            this.isReLiveIng = true;
+            this.reLiveTimer = 9999999;
             GameContainer.addspeed = 15;
             this.addChildAt(this.reLiveText, this.numChildren - 1);
         };
@@ -887,9 +898,6 @@ var fighter;
             this._ui._shpTextCon.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
             this.sleep(1000).then(function () {
                 _this._ui.pause();
-                _this.btnBack.visible = true;
-                if (_this.reLive)
-                    _this.btnReLive.visible = true;
             });
             this.soundChannel.stop();
             if (this._ui._bgmFlag)
@@ -904,9 +912,9 @@ var fighter;
         /**复活 */
         GameContainer.prototype.reLiveClick = function () {
             this._ui.Run();
-            this.reLive = false;
-            this.btnBack.visible = false;
-            this.btnReLive.visible = false;
+            this.isReLiveIng = true;
+            --this.reLive;
+            platform.setUserRelive(this.reLive);
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
             this.bg.start();
@@ -939,15 +947,11 @@ var fighter;
             window.onkeydown = function (e) {
                 _this.gameStart();
             };
-            this.btnBack.visible = false;
-            if (this.reLive == true)
-                this.btnReLive.visible = false;
             this.removeChild(this.liftBall);
             this.removeChild(this.rightBall);
             GameContainer.myScore = 0;
             this.obstacleNum = 0;
             this.obstaclePosCnt = 0;
-            this.reLive = true;
             this.speed = 10;
         };
         /**成绩*/
@@ -1015,6 +1019,7 @@ var fighter;
             _this._shp = new egret.Shape();
             _this._shpTextTitle = new eui.Label();
             _this._shpTextCon = new eui.Label();
+            _this._reliveText = new eui.Label();
             return _this;
         }
         UI.prototype.Init = function () {
@@ -1030,6 +1035,10 @@ var fighter;
             this._myScoreTextBg.visible = false;
             this.addChild(this._myScoreTextBg);
             this.addChild(this._myScoreText);
+            this._title = this.createBitmapByName("title_png");
+            this._title.x = Config.StageHalfWidth - this._title.width / 2;
+            this._title.y = 200;
+            this.addChild(this._title);
             this._mask = new egret.Shape();
             this._mask.graphics.beginFill(0x000000, 0.3);
             this._mask.graphics.drawRect(0, 0, Config.StageWidth, Config.StageHeight);
@@ -1037,7 +1046,7 @@ var fighter;
             this.addChild(this._mask);
             this._shp.graphics.lineStyle(10, 0x636363);
             this._shp.graphics.beginFill(0xFFFAF0, 1);
-            this._shp.graphics.drawRect(Config.StageWidth / 8, Config.StageHeight / 3, Config.StageWidth * 3 / 4, Config.StageHeight / 3);
+            this._shp.graphics.drawRect(Config.StageWidth / 8, Config.StageHeight / 3, Config.StageWidth * 3 / 4, Config.StageHeight * 2 / 5);
             this._shp.graphics.endFill();
             this._shp.visible = false;
             this.addChild(this._shp);
@@ -1059,13 +1068,38 @@ var fighter;
             this._shpTextCon.textColor = 0x0F0F0F;
             this._shpTextCon.visible = false;
             this.addChild(this._shpTextCon);
+            //创建复活按钮
+            this._btnReLive = this.createBitmapByName("btn_relive_png");
+            this._btnReLive.x = (Config.StageWidth - this._btnReLive.width) / 2;
+            this._btnReLive.y = (Config.StageHeight - this._btnReLive.height) * 7 / 10 - 50;
+            this._btnReLive.touchEnabled = true;
+            this._btnReLive.visible = false;
+            this.addChild(this._btnReLive);
+            this._btnReLive.addEventListener(egret.TouchEvent.TOUCH_TAP, this.relive, this);
+            //创建返回按钮
+            this._btnBack = this.createBitmapByName("btn_back_png");
+            this._btnBack.x = (Config.StageWidth - this._btnBack.width) / 2;
+            this._btnBack.y = Config.StageHeight * 6 / 7;
+            this._btnBack.touchEnabled = true;
+            this._btnBack.visible = false;
+            this.addChild(this._btnBack);
+            this._btnBack.addEventListener(egret.TouchEvent.TOUCH_END, this.clickBack, this);
             this._bgmIcon = this.createBitmapByName("bgm_open_png");
-            this._bgmIcon.x = 40;
-            this._bgmIcon.y = 20;
+            this._bgmIcon.x = 240;
+            this._bgmIcon.y = 45;
             this._bgmIcon.touchEnabled = true;
             this._bgmIcon.addEventListener(egret.TouchEvent.TOUCH_TAP, this.bgmControl, this);
             this.addChild(this._bgmIcon);
             this._bgmFlag = true;
+            this._reliveIcon = this.createBitmapByName("relive_png");
+            this._reliveIcon.x = 40;
+            this._reliveIcon.y = 40;
+            this.addChild(this._reliveIcon);
+            this._reliveText.text = (fighter.GameContainer.Inst.reLive == -1 ? "" : fighter.GameContainer.Inst.reLive) + "";
+            this._reliveText.x = 130;
+            this._reliveText.y = 50;
+            this._reliveText.size = 32;
+            this.addChild(this._reliveText);
             this._startBtn = new fighter.Button();
             this._startBtn.Init("btn_bg_png", "开始游戏", this.start, this);
             this.addChild(this._startBtn);
@@ -1099,19 +1133,22 @@ var fighter;
                 if (child == this._rankBit) {
                     continue;
                 }
-                if (child == this._shp || child == this._shpTextTitle || child == this._shpTextCon || child == this._mask)
+                if (child == this._shp || child == this._shpTextTitle || child == this._shpTextCon || child == this._mask || child == this._btnBack || child == this._reliveIcon || child == this._reliveText)
+                    child.visible = true;
+                else if (child == this._btnReLive && fighter.GameContainer.Inst.reLive > 0)
                     child.visible = true;
                 else
                     child.visible = false;
             }
         };
         UI.prototype.Stop = function () {
+            this._reliveText.text = (fighter.GameContainer.Inst.reLive == -1 ? "" : fighter.GameContainer.Inst.reLive) + "";
             for (var i = 0; i < this.numChildren; i++) {
                 var child = this.getChildAt(i);
                 if (child == this._rankBit) {
                     continue;
                 }
-                if (child == this._myScoreText || child == this._myScoreTextBg || child == this._shp || child == this._shpTextTitle || child == this._shpTextCon)
+                if (child == this._myScoreText || child == this._myScoreTextBg || child == this._shp || child == this._shpTextTitle || child == this._shpTextCon || child == this._btnReLive || child == this._btnBack)
                     this.getChildAt(i).visible = false;
                 else
                     this.getChildAt(i).visible = true;
@@ -1169,8 +1206,21 @@ var fighter;
             this.addChild(this._rankBit);
         };
         UI.prototype.share = function () {
+            var _this = this;
             var imgurl = "resource/assets/icon.png";
-            platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl);
+            platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl).then(function (res) {
+                if (res)
+                    platform.setUserRelive(++fighter.GameContainer.Inst.reLive);
+                _this._reliveText.text = (fighter.GameContainer.Inst.reLive == -1 ? "" : fighter.GameContainer.Inst.reLive) + "";
+            });
+        };
+        UI.prototype.relive = function () {
+            // var imgurl: string = "resource/assets/icon.png";
+            // platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl).then((res) => {
+            // 	if(res)
+            // 		GameContainer.Inst.reLiveClick();
+            // });
+            fighter.GameContainer.Inst.reLiveClick();
         };
         UI.prototype.bgmControl = function () {
             if (this._bgmFlag) {
@@ -1181,6 +1231,9 @@ var fighter;
                 this._bgmFlag = true;
                 this._bgmIcon.texture = RES.getRes("bgm_open_png");
             }
+        };
+        UI.prototype.clickBack = function () {
+            fighter.GameContainer.Inst.btnBackClick();
         };
         UI.prototype.createBitmapByName = function (name) {
             var result = new egret.Bitmap();

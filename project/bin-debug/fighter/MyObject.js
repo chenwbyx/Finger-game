@@ -51,4 +51,3 @@ var fighter;
     fighter.MyObject = MyObject;
     __reflect(MyObject.prototype, "fighter.MyObject");
 })(fighter || (fighter = {}));
-//# sourceMappingURL=MyObject.js.map

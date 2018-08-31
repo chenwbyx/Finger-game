@@ -59,6 +59,7 @@ function drawRankPanel() {
     context.restore();
     context.save();
     context.clearRect(offsetX_rankToBorder, offsetY_rankToBorder, rankWidth, rankHeight);
+    //console.log(offsetX_rankToBorder, offsetY_rankToBorder);
     //context.scale(ratio, ratio);
     // 背景
     context.fillStyle = 'rgba(245, 245, 245, 1)';
@@ -68,7 +69,7 @@ function drawRankPanel() {
     // 标题
     context.fillStyle = '#FFFFFF'
     context.font = 'bold 50px Arial'
-    context.fillText('排行榜', stageWidth / 2 - 80, offsetY_rankToBorder + 70)
+    context.fillText('排行榜', stageWidth / 2 - 75, offsetY_rankToBorder + 70)
 
     //起始id
     const startID = perPageMaxNum * page;
@@ -85,8 +86,8 @@ function drawRankPanel() {
  */
 function init() {
     //排行榜绘制数据初始化,可以在此处进行修改
-    rankWidth = stageWidth * 4 / 5;
-    rankHeight = stageHeight * 3 / 4;
+    rankWidth = stageWidth * 4 / 5 ;
+    rankHeight = stageHeight * 3 / 4 ;
     barWidth = rankWidth * 4 / 5;
     barHeight = rankWidth / perPageMaxNum;
     offsetX_rankToBorder = (stageWidth - rankWidth) / 2;
@@ -98,8 +99,8 @@ function init() {
     avatarSize = barHeight - 10;
     intervalX = barWidth / 20;
     textOffsetY = (barHeight + fontSize) / 2;
-    textMaxSize = barWidth / 3;
-    indexWidth = context.measureText("99").width;
+    textMaxSize = barWidth * 2 / 5;
+    indexWidth = context.measureText("9999").width;
 
     //按钮绘制数据初始化
     buttonWidth = barWidth / 3;
@@ -129,11 +130,12 @@ function drawButton() {
     context_drawImage(assets.button, nextButtonX, nextButtonY, buttonWidth, buttonHeight)
     context_drawImage(assets.button, lastButtonX, lastButtonY, buttonWidth, buttonHeight);
 }
+
 function drawCloseButtonText() {
     context.fillStyle = '#0f0f0f';
     context.font = '30px Arial';
-    context.fillText('上一页', lastButtonX + 30, lastButtonY + 40);
-    context.fillText('下一页', nextButtonX + 30, nextButtonY + 40);
+    context.fillText('上一页', lastButtonX + buttonWidth / 2 - 45, lastButtonY + buttonHeight / 2 + 10);
+    context.fillText('下一页', nextButtonX + buttonWidth / 2 - 45, nextButtonY + buttonHeight / 2 + 10);
 }
 
 /**
@@ -141,12 +143,7 @@ function drawCloseButtonText() {
  */
 function drawRankByGroup(currentGroup) {
     for (let i = 0; i < currentGroup.length; i++) {
-        if (i != 0){
-            context.strokeStyle = "#6E6E6E";
-            context.moveTo(offsetX_rankToBorder + 80, startY + i * preOffsetY + textOffsetY - 90);
-            context.lineTo(offsetX_rankToBorder + rankWidth - 80, startY + i * preOffsetY + textOffsetY - 90);
-            context.stroke(); 
-        }
+        
         const data = currentGroup[i];
         drawByData(data, i);
     }
@@ -158,8 +155,13 @@ function drawRankByGroup(currentGroup) {
 function drawByData(data, i) {
     let x = startX;
     //绘制底框
-    //context_drawImage(assets.box, startX, startY + i * preOffsetY, barWidth, barHeight);
     x += 10;
+    // if (i != 0) {
+    //     context.strokeStyle = "#6E6E6E";
+    //     context.moveTo(offsetX_rankToBorder + 60, startY + i * preOffsetY + textOffsetY - 90);
+    //     context.lineTo(offsetX_rankToBorder + rankWidth - 60, startY + i * preOffsetY + textOffsetY - 90);
+    //     context.stroke();
+    // }
     //设置字体
     context.font = fontSize + "px Arial";
     context.fillStyle = "#0F0F0F";
@@ -440,7 +442,6 @@ let myScore = undefined;
  * 增加来自主域的监听函数
  */
 function addOpenDataContextListener() {
-    console.log('增加监听函数')
     wx.onMessage((data) => {
         console.log(data);
         if (data.command == 'open') {

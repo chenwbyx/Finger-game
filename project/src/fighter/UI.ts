@@ -1,5 +1,7 @@
 module fighter {
 	export class UI extends egret.Sprite {
+		/**标题 */
+		private _title: egret.Bitmap;
 		public _mask: egret.Shape;
 		private _startBtn: fighter.Button;
 		private _friendRankBtn: fighter.Button;
@@ -18,6 +20,13 @@ module fighter {
 		/**声音图标 */
 		private _bgmIcon: egret.Bitmap;
 		public _bgmFlag: boolean;
+		/**复活卡图标 */
+		private _reliveIcon: egret.Bitmap;
+		public _reliveText: eui.Label = new eui.Label();
+		/**复活按钮 */
+		private _btnReLive: egret.Bitmap;
+		/**返回按钮 */
+		private _btnBack: egret.Bitmap;
 		public constructor() {
 			super();
 		}
@@ -37,6 +46,11 @@ module fighter {
 			this.addChild(this._myScoreTextBg);
 			this.addChild(this._myScoreText);
 
+			this._title = this.createBitmapByName("title_png");
+			this._title.x = Config.StageHalfWidth -  this._title.width / 2;
+			this._title.y = 200;
+			this.addChild(this._title);
+
 			this._mask = new egret.Shape();
 			this._mask.graphics.beginFill(0x000000, 0.3);
 			this._mask.graphics.drawRect(0, 0, Config.StageWidth, Config.StageHeight);
@@ -45,7 +59,7 @@ module fighter {
 
 			this._shp.graphics.lineStyle( 10, 0x636363 );
 			this._shp.graphics.beginFill( 0xFFFAF0, 1);
-        	this._shp.graphics.drawRect( Config.StageWidth / 8, Config.StageHeight / 3, Config.StageWidth * 3 / 4 , Config.StageHeight / 3 );
+        	this._shp.graphics.drawRect( Config.StageWidth / 8, Config.StageHeight / 3, Config.StageWidth * 3 / 4 , Config.StageHeight * 2 / 5 );
         	this._shp.graphics.endFill();
 			this._shp.visible = false;
         	this.addChild( this._shp );
@@ -68,13 +82,41 @@ module fighter {
 			this._shpTextCon.visible = false;
 			this.addChild(this._shpTextCon);
 
+			//创建复活按钮
+			this._btnReLive = this.createBitmapByName("btn_relive_png");
+			this._btnReLive.x = (Config.StageWidth - this._btnReLive.width) / 2;
+			this._btnReLive.y = (Config.StageHeight - this._btnReLive.height) * 7/10 - 50;
+			this._btnReLive.touchEnabled = true;
+			this._btnReLive.visible = false;
+			this.addChild(this._btnReLive);
+			this._btnReLive.addEventListener(egret.TouchEvent.TOUCH_TAP, this.relive, this);
+
+			//创建返回按钮
+			this._btnBack = this.createBitmapByName("btn_back_png");
+			this._btnBack.x = (Config.StageWidth - this._btnBack.width) / 2;
+			this._btnBack.y = Config.StageHeight * 6 / 7;
+			this._btnBack.touchEnabled = true;
+			this._btnBack.visible = false;
+			this.addChild(this._btnBack);
+			this._btnBack.addEventListener(egret.TouchEvent.TOUCH_END, this.clickBack, this);
+
 			this._bgmIcon = this.createBitmapByName("bgm_open_png");
-			this._bgmIcon.x = 40;
-			this._bgmIcon.y = 20;
+			this._bgmIcon.x = 240;
+			this._bgmIcon.y = 45;
 			this._bgmIcon.touchEnabled = true;
 			this._bgmIcon.addEventListener(egret.TouchEvent.TOUCH_TAP, this.bgmControl, this);
 			this.addChild(this._bgmIcon);
 			this._bgmFlag = true;
+
+			this._reliveIcon = this.createBitmapByName("relive_png");
+			this._reliveIcon.x = 40;
+			this._reliveIcon.y = 40;
+			this.addChild(this._reliveIcon);
+			this._reliveText.text = (fighter.GameContainer.Inst.reLive == -1 ? "" : fighter.GameContainer.Inst.reLive) + "";
+			this._reliveText.x = 130
+			this._reliveText.y = 50;
+			this._reliveText.size = 32;
+			this.addChild(this._reliveText);
 			
 			this._startBtn = new fighter.Button();
 			this._startBtn.Init("btn_bg_png", "开始游戏", this.start, this);
@@ -118,20 +160,23 @@ module fighter {
 				if (child == this._rankBit) {
 					continue;
 				}
-				if(child == this._shp || child == this._shpTextTitle || child == this._shpTextCon || child == this._mask)
-				 	child.visible=true;
+				if(child == this._shp || child == this._shpTextTitle || child == this._shpTextCon || child == this._mask || child == this._btnBack || child == this._reliveIcon || child == this._reliveText)
+				 	child.visible = true;
+				else if (child == this._btnReLive && GameContainer.Inst.reLive > 0)
+					child.visible = true;
 				else
-					child.visible=false;
+					child.visible = false;
 			}
 		}
 
 		public Stop(): void {
+			this._reliveText.text = (fighter.GameContainer.Inst.reLive == -1 ? "" : fighter.GameContainer.Inst.reLive) + "";
 			for (var i: number = 0; i < this.numChildren; i++) {
 				var child: any = this.getChildAt(i);
 				if (child == this._rankBit) {
 					continue;
 				}
-				if(child==this._myScoreText || child==this._myScoreTextBg || child == this._shp || child == this._shpTextTitle || child == this._shpTextCon)
+				if(child==this._myScoreText || child==this._myScoreTextBg || child == this._shp || child == this._shpTextTitle || child == this._shpTextCon || child == this._btnReLive || child == this._btnBack)
 				 	this.getChildAt(i).visible =false;
 				else
 					this.getChildAt(i).visible = true;
@@ -159,7 +204,7 @@ module fighter {
 		private friendRank(): void {
 			platform.sendShareData({ command: "open", type: "friend" });
 			//创建开放数据域显示对象
-			this._rankBit = platform.openDataContext.createDisplayObject(null, this.stage.stageWidth, this.stage.stageHeight);
+			this._rankBit = platform.openDataContext.createDisplayObject(null, this.stage.stageWidth , this.stage.stageHeight );
 			this._rankBit.touchEnabled = true;
 			this._rankBit.pixelHitTest = true;
 			this.addChild(this._rankBit);
@@ -167,7 +212,6 @@ module fighter {
 
 		private clickGroup() {
 			var imgurl: string = "resource/assets/icon.png";
-
 			return new Promise((resolve, reject) => {
 				platform.updateShareMenu(true).then(data => {
 					console.log("updateShareMenu: ", data);
@@ -195,9 +239,22 @@ module fighter {
 			this.addChild(this._rankBit);
 		}
 
-		private share(): void {
+		public share(): void {
 			var imgurl: string = "resource/assets/icon.png";
-			platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl);
+			platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl).then((res) => {
+				if(res)
+					platform.setUserRelive(++fighter.GameContainer.Inst.reLive);
+				this._reliveText.text = (fighter.GameContainer.Inst.reLive == -1 ? "" : fighter.GameContainer.Inst.reLive) + "";
+			});
+		}
+
+		private relive():void {
+			// var imgurl: string = "resource/assets/icon.png";
+			// platform.shareAppMessage("收到一封战书,谁输谁请客吃饭!^_^", imgurl).then((res) => {
+			// 	if(res)
+			// 		GameContainer.Inst.reLiveClick();
+			// });
+			GameContainer.Inst.reLiveClick();
 		}
 
 		private bgmControl():void{
@@ -208,6 +265,10 @@ module fighter {
 				this._bgmFlag = true;
 				this._bgmIcon.texture = RES.getRes("bgm_open_png");
 			}
+		}
+
+		private clickBack():void {
+			GameContainer.Inst.btnBackClick();
 		}
 
 		private createBitmapByName(name: string): egret.Bitmap {

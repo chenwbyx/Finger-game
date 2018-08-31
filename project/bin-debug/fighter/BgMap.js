@@ -75,4 +75,3 @@ var fighter;
     fighter.BgMap = BgMap;
     __reflect(BgMap.prototype, "fighter.BgMap");
 })(fighter || (fighter = {}));
-//# sourceMappingURL=BgMap.js.map

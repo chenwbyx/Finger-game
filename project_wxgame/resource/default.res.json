@@ -45,7 +45,7 @@
 			"name": "sea_json",
 			"type": "sheet",
 			"url": "assets/sea.json",
-			"subkeys": "r_fish_png,l_fish_png,btn_relive_png,sea_text_bg_png,sea_obstacle_2_png,sea_obstacle_4_png,sea_obstacle_1_png,sea_obstacle_3_png,sea_obstacle_0_png,btn_bg_png,bgm_open_png,bgm_close_png,btn_back_png"
+			"subkeys": "sea_obstacle_1_png,sea_obstacle_2_png,sea_obstacle_3_png,sea_obstacle_4_png,sea_text_bg_png,title_png,btn_back_png,btn_bg_png,btn_relive_png,l_fish_png,r_fish_png,relive_png,sea_obstacle_0_png,bgm_open_png,bgm_close_png"
 		}
 	]
 }

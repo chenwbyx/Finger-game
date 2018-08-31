@@ -30,6 +30,8 @@ var fighter;
             _this.RoadPosition = [];
             /**是否可以复活 */
             _this.reLive = true;
+            /**是否处于无敌状态 */
+            _this.isReLiveIng = false;
             /**无敌时间*/
             _this.reLiveTimer = 5;
             /**显示无敌时间的文本 */
@@ -54,22 +56,6 @@ var fighter;
             this._ui = new fighter.UI();
             this.addChild(this._ui);
             this._ui.Init();
-            //创建返回按钮
-            this.btnBack = this.createBitmapByName("btn_back_png");
-            this.btnBack.x = (this.stageW - this.btnBack.width) / 2;
-            this.btnBack.y = this.stageH * 6 / 7;
-            this.btnBack.touchEnabled = true;
-            this.btnBack.visible = false;
-            this.addChild(this.btnBack);
-            this.btnBack.addEventListener(egret.TouchEvent.TOUCH_END, this.btnBackClick, this);
-            //创建复活按钮
-            this.btnReLive = this.createBitmapByName("btn_relive_png");
-            this.btnReLive.x = (this.stageW - this.btnReLive.width) / 2;
-            this.btnReLive.y = (this.stageH - this.btnReLive.height) * 8 / 10;
-            this.btnReLive.touchEnabled = true;
-            this.btnReLive.visible = false;
-            this.addChild(this.btnReLive);
-            this.btnReLive.addEventListener(egret.TouchEvent.TOUCH_TAP, this.reLiveClick, this);
             //初始化道路（轨迹）位置
             for (var i = 0; i < 4; ++i) {
                 this.RoadPosition[i] = this.stageW / 8 + i * this.stageW / 4;
@@ -252,11 +238,11 @@ var fighter;
                 }
                 theObstacle.y += (this.speed + GameContainer.addspeed);
             }
-            if (this.reLive == true && this.obstacleCnt & 1)
+            if (this.isReLiveIng == false && this.obstacleCnt & 1)
                 this.gameHitTest();
             GameContainer.myScore += parseInt(((this.speed + GameContainer.addspeed) / 10).toString());
             this._ui._myScoreText.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
-            if (this.reLive == false && ++this.count == 60) {
+            if (this.isReLiveIng == true && ++this.count == 60) {
                 this.reLiveTimer--;
                 this.count = 0;
             }
@@ -268,7 +254,7 @@ var fighter;
                 this.liftBall.filters = null;
                 this.rightBall.filters = null;
                 this.removeChild(this.reLiveText);
-                this.reLive = true;
+                this.isReLiveIng = false;
                 this.reLiveTimer = 5;
             }
             if (this.stage.frameRate < 45) {
@@ -298,7 +284,7 @@ var fighter;
         GameContainer.prototype.Invincible = function () {
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
-            this.reLive = false;
+            this.isReLiveIng = true;
             this.reLiveTimer = 8;
             GameContainer.addspeed = 15;
             this.addChildAt(this.reLiveText, this.numChildren - 1);
@@ -313,9 +299,6 @@ var fighter;
             this._ui._shpTextCon.text = parseInt((GameContainer.myScore / 30).toString()) + "米";
             this.sleep(1000).then(function () {
                 _this._ui.pause();
-                _this.btnBack.visible = true;
-                if (_this.reLive)
-                    _this.btnReLive.visible = true;
             });
             this.soundChannel.stop();
             if (this._ui._bgmFlag)
@@ -330,9 +313,8 @@ var fighter;
         /**复活 */
         GameContainer.prototype.reLiveClick = function () {
             this._ui.Run();
+            this.isReLiveIng = true;
             this.reLive = false;
-            this.btnBack.visible = false;
-            this.btnReLive.visible = false;
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
             this.bg.start();
@@ -365,9 +347,6 @@ var fighter;
             window.onkeydown = function (e) {
                 _this.gameStart();
             };
-            this.btnBack.visible = false;
-            if (this.reLive == true)
-                this.btnReLive.visible = false;
             this.removeChild(this.liftBall);
             this.removeChild(this.rightBall);
             GameContainer.myScore = 0;
@@ -385,4 +364,3 @@ var fighter;
     fighter.GameContainer = GameContainer;
     __reflect(GameContainer.prototype, "fighter.GameContainer");
 })(fighter || (fighter = {}));
-//# sourceMappingURL=GameContainer.js.map

@@ -62,10 +62,11 @@ class Main extends eui.UILayer {
         this.createGameScene();
         const result = await RES.getResAsync("description_json")
         this.startAnimation(result);
+        //console.log("enter runGame");
         await platform.login();
         const userInfo = await platform.getUserInfo();
-        platform.sendShareData({command:"load"});
-        console.log(userInfo);
+        //platform.sendShareData({command:"load"});
+        
     }
 
     private async loadResource() {
@@ -113,6 +114,18 @@ class Main extends eui.UILayer {
         fighter.GameContainer.Inst.Init();
         platform.sendShareData({command:"loadRes"});
         platform.sendShareData({command:"getUserCloudStorage"});
+        platform.getUserRelive().then((res) => {
+            if(res == false){
+                platform.setUserRelive(5);
+                fighter.GameContainer.Inst.reLive = 5;
+                fighter.GameContainer.Inst._ui._reliveText.text = 5 + "";
+            }
+            else{
+                fighter.GameContainer.Inst.reLive = res;
+                fighter.GameContainer.Inst._ui._reliveText.text = res + "";
+            }
+        });
+        
     }
     /**
      * 描述文件加载成功，开始播放动画
@@ -140,7 +153,6 @@ class Main extends eui.UILayer {
             tw.to({ "alpha": 0 }, 200);
             tw.call(change, this);
         };
-
         change();
     }
 

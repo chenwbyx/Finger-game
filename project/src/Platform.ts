@@ -26,6 +26,10 @@ declare interface Platform {
     sendShareData(kvobj:any):void;
     //获取启动参数
     getLaunchOptionsSync():any;
+
+    setUserRelive(num:number):void;
+
+    getUserRelive():Promise<any>
 }
 
 class DebugPlatform implements Platform {
@@ -60,6 +64,14 @@ class DebugPlatform implements Platform {
     async shareApp(title:string,imgurl:string): Promise<any>{}
 
     async updateShareMenu(withticket): Promise<any>{}
+    
+    async setUserRelive(num:number){
+
+    }
+
+    async getUserRelive():Promise<any>{
+
+    }
 }
 
 

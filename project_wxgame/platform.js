@@ -18,7 +18,7 @@ class WxgamePlatform {
     getUserInfo() {
         return new Promise((resolve, reject) => {
             wx.getUserInfo({
-                withCredentials: true,
+                withCredentials: true, 
                 success: function (res) {
                     var userInfo = res.userInfo
                     var nickName = userInfo.nickName
@@ -53,6 +53,7 @@ class WxgamePlatform {
             })
         })
     }
+    
     updateShareMenu(withShareTicket) {
         return new Promise((resolve, reject) => {
             wx.updateShareMenu({
@@ -111,6 +112,42 @@ class WxgamePlatform {
         return wx.getLaunchOptionsSync();
     }
 
+    showAD() {
+        oldBannerAd.destroy()
+        let newBannerAd = wx.createBannerAd({
+            adUnitId: 'xxxx',
+            style: {
+                left: 10,
+                top: 76,
+                width: screenWidth
+            }
+        })
+        newBannerAd.show()
+    }
+
+    getUserRelive() {
+        return new Promise((resolve, reject) => {
+            console.log('getUserRelive');
+            wx.getStorage({
+                key: 'relive',
+                success: function(res) {
+                    resolve(res.data)
+                },
+                fail: function(res) {
+                    resolve(false);
+                }
+            })
+        })
+    }
+    
+    setUserRelive(number) {
+        console.log('setUserRelive');
+        wx.setStorage({
+            key: 'relive',
+            data: number,
+        })
+    }
+    
     openDataContext = new WxgameOpenDataContext();
 }
 
@@ -141,4 +178,4 @@ class WxgameOpenDataContext {
 }
 
 
-window.platform = new WxgamePlatform();
+window.platform = new WxgamePlatform(); 
