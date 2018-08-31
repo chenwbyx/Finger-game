@@ -270,12 +270,12 @@ var Main = (function (_super) {
         egret.registerImplementation("eui.IAssetAdapter", assetAdapter);
         egret.registerImplementation("eui.IThemeAdapter", new ThemeAdapter());
         this.runGame().catch(function (e) {
-            //console.log(e);
+            console.log(e);
         });
     };
     Main.prototype.runGame = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var result, userInfo;
+            var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.loadResource()];
@@ -285,15 +285,9 @@ var Main = (function (_super) {
                         return [4 /*yield*/, RES.getResAsync("description_json")];
                     case 2:
                         result = _a.sent();
-                        this.startAnimation(result);
-                        //console.log("enter runGame");
                         return [4 /*yield*/, platform.login()];
                     case 3:
-                        //console.log("enter runGame");
                         _a.sent();
-                        return [4 /*yield*/, platform.getUserInfo()];
-                    case 4:
-                        userInfo = _a.sent();
                         return [2 /*return*/];
                 }
             });
@@ -368,33 +362,6 @@ var Main = (function (_super) {
                 fighter.GameContainer.Inst._ui._reliveText.text = res + "";
             }
         });
-    };
-    /**
-     * 描述文件加载成功，开始播放动画
-     * Description file loading is successful, start to play the animation
-     */
-    Main.prototype.startAnimation = function (result) {
-        var _this = this;
-        var parser = new egret.HtmlTextParser();
-        var textflowArr = result.map(function (text) { return parser.parse(text); });
-        var textfield = this.textfield;
-        var count = -1;
-        var change = function () {
-            count++;
-            if (count >= textflowArr.length) {
-                count = 0;
-            }
-            var textFlow = textflowArr[count];
-            // 切换描述内容
-            // Switch to described content
-            textfield.textFlow = textFlow;
-            var tw = egret.Tween.get(textfield);
-            tw.to({ "alpha": 1 }, 200);
-            tw.wait(2000);
-            tw.to({ "alpha": 0 }, 200);
-            tw.call(change, _this);
-        };
-        change();
     };
     return Main;
 }(eui.UILayer));
@@ -818,7 +785,7 @@ var fighter;
                 this.Invincible();
             }
             if ((GameContainer.myScore / 30) % 80 == 0 && GameContainer.myScore != 0)
-                this.speed = this.speed * 6 / 5;
+                this.speed = (this.speed * 6 / 5) > 17 ? 17 : this.speed * 6 / 5;
             if (parseFloat(((++this.obstacleCnt * this.speed) / 300).toFixed(1)) == this.obstacleSpace[this.obstacleNum]) {
                 this.obstacleCnt = 0;
                 this.obstacleNum = (++this.obstacleNum) % this.obstacleSpace.length;
@@ -884,7 +851,7 @@ var fighter;
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
             this.isReLiveIng = true;
-            this.reLiveTimer = 9999999;
+            this.reLiveTimer = 5;
             GameContainer.addspeed = 15;
             this.addChildAt(this.reLiveText, this.numChildren - 1);
         };
@@ -915,6 +882,7 @@ var fighter;
             this.isReLiveIng = true;
             --this.reLive;
             platform.setUserRelive(this.reLive);
+            fighter.GameContainer.Inst._ui._reliveText.text = this.reLive + "";
             this.liftBall.filters = [this.glowFilter];
             this.rightBall.filters = [this.glowFilter];
             this.bg.start();

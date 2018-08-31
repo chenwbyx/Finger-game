@@ -127,7 +127,6 @@ class WxgamePlatform {
 
     getUserRelive() {
         return new Promise((resolve, reject) => {
-            console.log('getUserRelive');
             wx.getStorage({
                 key: 'relive',
                 success: function(res) {
@@ -141,10 +140,15 @@ class WxgamePlatform {
     }
     
     setUserRelive(number) {
-        console.log('setUserRelive');
         wx.setStorage({
             key: 'relive',
             data: number,
+        })
+    }
+
+    navigateToMiniProgram() {
+        wx.navigateToMiniProgram({
+            appId: '',
         })
     }
     

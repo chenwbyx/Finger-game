@@ -339,6 +339,7 @@ module fighter {
 			this.isReLiveIng = true;
 			--this.reLive;
 			platform.setUserRelive(this.reLive);
+			fighter.GameContainer.Inst._ui._reliveText.text = this.reLive + "";
 			this.liftBall.filters = [this.glowFilter];
 			this.rightBall.filters = [this.glowFilter];
 			this.bg.start();

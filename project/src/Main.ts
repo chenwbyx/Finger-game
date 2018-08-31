@@ -53,20 +53,17 @@ class Main extends eui.UILayer {
 
 
         this.runGame().catch(e => {
-            //console.log(e);
+            console.log(e);
         })
     }
 
     private async runGame() {
         await this.loadResource()
         this.createGameScene();
-        const result = await RES.getResAsync("description_json")
-        this.startAnimation(result);
-        //console.log("enter runGame");
+        const result = await RES.getResAsync("description_json");
         await platform.login();
-        const userInfo = await platform.getUserInfo();
-        //platform.sendShareData({command:"load"});
-        
+        //获取用户信息，有弹窗需要用户确认，暂不需要
+        //const userInfo = await platform.getUserInfo();
     }
 
     private async loadResource() {
@@ -127,33 +124,4 @@ class Main extends eui.UILayer {
         });
         
     }
-    /**
-     * 描述文件加载成功，开始播放动画
-     * Description file loading is successful, start to play the animation
-     */
-    private startAnimation(result: Array<any>): void {
-        let parser = new egret.HtmlTextParser();
-
-        let textflowArr = result.map(text => parser.parse(text));
-        let textfield = this.textfield;
-        let count = -1;
-        let change = () => {
-            count++;
-            if (count >= textflowArr.length) {
-                count = 0;
-            }
-            let textFlow = textflowArr[count];
-
-            // 切换描述内容
-            // Switch to described content
-            textfield.textFlow = textFlow;
-            let tw = egret.Tween.get(textfield);
-            tw.to({ "alpha": 1 }, 200);
-            tw.wait(2000);
-            tw.to({ "alpha": 0 }, 200);
-            tw.call(change, this);
-        };
-        change();
-    }
-
 }
